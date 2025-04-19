@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SnippetDao extends JpaRepository<Snippet , Long> {
     List<Snippet>findByIsDeletedFalse();
+    long countByIsDeletedFalse();
 }

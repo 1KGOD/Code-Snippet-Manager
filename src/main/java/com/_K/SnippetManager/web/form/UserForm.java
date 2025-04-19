@@ -3,9 +3,7 @@ package com._K.SnippetManager.web.form;
 import com._K.SnippetManager.persistence.entity.*;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,12 +17,11 @@ public class UserForm {
     @Valid
     private Long userId;
 
-    @NotNull
     @Size(min = 2, message = "Name must be at least 2 characters long")
     private String name;
 
-    @NotNull
-    @Email(message = "Must be a valid email")
+    @Pattern(regexp = "^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "Email must start with a letter and be valid")
     @Column(unique = true)
     private String email;
 
@@ -74,6 +71,9 @@ public class UserForm {
     public void setPasswordRestTokens(List<PasswordRestToken> passwordRestTokens) {
         this.passwordRestTokens = passwordRestTokens;
     }
+
+
+
 
     public Role getRole() {
         return role;
@@ -147,13 +147,14 @@ public class UserForm {
         this.name = name;
     }
 
-    public @Email(message = "Must be a valid email") String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(@Email(message = "Must be a valid email") String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
+
 
     public @Size(min = 3, message = "Password must be at least 3 characters long") String getPassword() {
         return password;
