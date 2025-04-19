@@ -1,5 +1,6 @@
 package com._K.SnippetManager.persistence.entity;
 
+import com._K.SnippetManager.web.form.SnippetForm;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,6 +31,9 @@ public class Snippet {
     @JoinColumn(name = "languageId" )
     private Language language;
 
+    @Column(columnDefinition = "TEXT")
+    private String code;
+
     @OneToMany(mappedBy = "snippet")
     @JsonIgnore
     private List<Favorite> favorites;
@@ -41,6 +45,18 @@ public class Snippet {
     private Boolean isDeleted = false ;
 
 
+    public Snippet(SnippetForm snippetForm){
+        this.setSnippetId(snippetForm.getSnippetId());
+        this.setTitle(snippetForm.getTitle());
+        this.setLanguage(language);
+        this.setCode(snippetForm.getCode());
+        this.setCreatedAt(snippetForm.getCreatedAt());
+        this.setUpdateAt(snippetForm.getUpdatedAt());
+        this.setDeleted(snippetForm.getDeleted());
+    }
+
+    public Snippet(){}
+
 
     public Long getSnippetId() {
         return snippetId;
@@ -49,6 +65,15 @@ public class Snippet {
     public void setSnippetId(Long snippetId) {
         this.snippetId = snippetId;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public String getTitle() {
         return title;
