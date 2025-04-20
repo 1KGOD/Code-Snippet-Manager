@@ -45,6 +45,7 @@ public class SnippetController {
         Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
         model.addAttribute("user",user.orElse(null));
         model.addAttribute("snippetForm", new SnippetForm());
+        model.addAttribute("page", "snippet");
         model.addAttribute("lang",lang);
         return "user/usersnippet";
     }

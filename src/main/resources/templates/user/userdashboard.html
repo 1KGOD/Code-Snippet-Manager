@@ -32,10 +32,10 @@
     <!-- Sidebar -->
     <div class="sidebar p-4">
         <div class="menu-block">
-            <a th:href="@{/user/dashboard}" class="menu-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a th:href="@{/user/snippet}" class="menu-link"><i class="bi bi-code-square me-2"></i> Snippets</a>
-            <a th:href="@{/user/profile}" class="menu-link"><i class="bi bi-person-circle me-2"></i> Profile</a>
-            <a th:href="@{/logout}" class="menu-link"><i class="bi bi-box-arrow-right me-2"></i> Log out</a>
+            <a th:href="@{/user/dashboard}" th:classappend="${page=='dashboard'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a th:href="@{/user/snippet}" th:classappend="${page=='snippet'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-code-square me-2"></i> Snippets</a>
+            <a th:href="@{/user/profile}" th:classappend="${page=='profile'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-person-circle me-2"></i> Profile</a>
+            <a th:href="@{/logout}" class="menu-link" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i> Log out</a>
         </div>
     </div>
 
@@ -82,7 +82,26 @@
                 </div>
                 <a th:href="@{'/user/snippet/' + ${snippet.snippetId}}" class="view-btn">View</a>
             </div>
+        </div>
 
+
+        <!-- Logout Modal -->
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content dark-theme border-0" style="border-radius: 12px;">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #00d4ff;">Confirm Logout</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-white">
+                        Are you sure you want to log out?
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <a href="/logout" class="btn" style="background-color: #00d4ff; color: #000; font-weight: 600;">Log Out</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

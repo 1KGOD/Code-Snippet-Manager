@@ -72,6 +72,7 @@ public class UserController {
 
             List<Snippet> snippets = snippetDao.findByUser_UserIDAndIsDeletedFalseOrderByCreatedAtDesc(user.getUserID());
 
+            //debug and log
             System.out.println("Snippets found: " + snippets.size());
             System.out.println("Logged in User ID: " + user.getUserID());
             for (Snippet snippet : snippets) {
@@ -79,6 +80,7 @@ public class UserController {
             }
             model.addAttribute("user", user);
             model.addAttribute("count", snippets.size());
+            model.addAttribute("page", "dashboard");
             model.addAttribute("snippets", snippets);
         } else {
             // Handle case where user is not found (optional: redirect or error message)
@@ -103,6 +105,7 @@ public class UserController {
             userForm.setEmail(user.getEmail());
             userForm.setProfileImage(null); // Initialize the file field
             model.addAttribute("userForm", userForm);
+            model.addAttribute("page", "profile");
             model.addAttribute("user", user);
             return "user/userprofile";
         }else {
@@ -134,6 +137,7 @@ public class UserController {
             user.setName(userForm.getName());
             user.setEmail(userForm.getEmail());
             user.setUpdateAt(LocalDateTime.now());
+
             // Handle file upload
             if (userForm.getProfileImage() != null && !userForm.getProfileImage().isEmpty()) {
                 System.out.println("Profile image is present.");
