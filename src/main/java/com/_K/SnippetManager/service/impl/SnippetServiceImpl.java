@@ -4,6 +4,7 @@ import com._K.SnippetManager.persistence.dao.LanguageDao;
 import com._K.SnippetManager.persistence.dao.SnippetDao;
 import com._K.SnippetManager.persistence.entity.Language;
 import com._K.SnippetManager.persistence.entity.Snippet;
+import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,12 @@ public class SnippetServiceImpl implements SnippetService {
     }
 
     @Override
-    public void saveSnippet(SnippetForm snippetForm) {
+    public void saveSnippet(SnippetForm snippetForm, User user) {
         Snippet snippet = new Snippet(snippetForm);
         // snippetform-> language -> snippet entity -> db
         //fetch data via db by finding id of language -> get data from db -> set that data to snippet entity
         Language language = languageDao.findById(snippetForm.getLanguage().getLanguageId()).orElseThrow( ()-> new RuntimeException("language not Found"));
+        snippet.setUser(user);
         snippet.setLanguage(language);
         snippet.setCreatedAt(LocalDateTime.now());
         snippetDao.save(snippet);

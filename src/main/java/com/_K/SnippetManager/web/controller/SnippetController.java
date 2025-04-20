@@ -50,14 +50,14 @@ public class SnippetController {
     }
 
     @RequestMapping(value = "/user/snippet/add" , method = RequestMethod.POST)
-    public String snippetAdd(@Valid @ModelAttribute("snippetForm")SnippetForm snippetForm,@AuthenticationPrincipal UserDetails userDetails, Model model , BindingResult bindingResult){
-        String email = userDetails.getUsername();
+    public String snippetAdd(@AuthenticationPrincipal UserDetails userDetail,@Valid @ModelAttribute("snippetForm")SnippetForm snippetForm, BindingResult bindingResult ,Model model ){
+        String email = userDetail.getUsername();
         Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
         List<Language> lang = languageDao.findAll();
         if(bindingResult.hasErrors()){
             return "user/dashboard";
         }else {
-            snippetService.saveSnippet(snippetForm);
+            snippetService.saveSnippet(snippetForm,user.orElse(null));
             model.addAttribute("lang",lang);
             model.addAttribute("user",user.orElse(null));
             model.addAttribute("showSuccessModal",true);

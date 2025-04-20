@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,15 +18,17 @@ public class UserForm {
     @Valid
     private Long userId;
 
+    @NotNull(message = "Name cannot be null")
     @Size(min = 2, message = "Name must be at least 2 characters long")
     private String name;
 
+    @NotNull(message = "Email cannot be null")
     @Pattern(regexp = "^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
             message = "Email must start with a letter and be valid")
     @Column(unique = true)
     private String email;
 
-    @NotNull
+
     @Size(min = 3 , message = "Password must be at least 3 characters long")
     private String password;
 
@@ -39,7 +42,7 @@ public class UserForm {
 
     private List<Log> logs;
 
-    private String profileImage;
+    private MultipartFile profileImage;
 
     private LocalDateTime createdAt;
 
@@ -56,7 +59,6 @@ public class UserForm {
         this.setRole(user.getRole());
         this.setFavorite(user.getFavorite());
         this.setLogs(user.getLogs());
-        this.setProfileImage(user.getProfileImage());
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdateAt(user.getUpdateAt());
         this.setDeleted(user.getDeleted());
@@ -107,11 +109,11 @@ public class UserForm {
         this.logs = logs;
     }
 
-    public String getProfileImage() {
+    public MultipartFile getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(String profileImage) {
+    public void setProfileImage(MultipartFile profileImage) {
         this.profileImage = profileImage;
     }
 
