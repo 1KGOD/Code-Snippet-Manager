@@ -7,9 +7,13 @@ import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SnippetServiceImpl implements SnippetService {
@@ -33,4 +37,25 @@ public class SnippetServiceImpl implements SnippetService {
         snippet.setCreatedAt(LocalDateTime.now());
         snippetDao.save(snippet);
     }
+
+    @Override
+    public Page<SnippetForm> getAllSnippets(int page, int size, String keyword) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Snippet> snippets;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            snippets = snippetDao.findBySearchTerm(keyword, pageable);
+        } else {
+            snippets = snippetDao.findByIsDeletedFalse(pageable);
+        }
+
+        List<SnippetForm> snippetForms = snippets.getContent().stream()
+                .map(SnippetForm::new)
+                .toList();
+
+        return new PageImpl<>(snippetForms, pageable, snippets.getTotalElements());
+    }
+
+
+
 }

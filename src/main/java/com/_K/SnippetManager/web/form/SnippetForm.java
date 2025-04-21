@@ -3,6 +3,7 @@ package com._K.SnippetManager.web.form;
 import com._K.SnippetManager.persistence.entity.Favorite;
 import com._K.SnippetManager.persistence.entity.Language;
 import com._K.SnippetManager.persistence.entity.Snippet;
+import com._K.SnippetManager.persistence.entity.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
@@ -20,6 +21,8 @@ public class SnippetForm {
     @NotNull
     private Language language;
 
+    private User user;
+
     private Favorite favorite;
 
     private String code;
@@ -34,7 +37,8 @@ public class SnippetForm {
     public SnippetForm(Snippet snippet){
         this.setSnippetId(snippet.getSnippetId());
         this.setTitle(snippet.getTitle());
-        this.setLanguage(language);
+        this.setLanguage(snippet.getLanguage());
+        this.setUser(snippet.getUser());
         this.setCreatedAt(snippet.getCreatedAt());
         this.setUpdatedAt(snippet.getUpdateAt());
         this.setCode(snippet.getCode());
@@ -105,5 +109,13 @@ public class SnippetForm {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -26,7 +26,6 @@ public class Language {
     private List<Snippet> snippet;
 
 
-
     public Long getLanguageId() {
         return languageId;
     }

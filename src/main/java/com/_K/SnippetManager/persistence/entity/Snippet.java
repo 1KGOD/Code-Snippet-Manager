@@ -23,11 +23,11 @@ public class Snippet {
 
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId" )
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "languageId" )
     private Language language;
 
@@ -48,7 +48,7 @@ public class Snippet {
     public Snippet(SnippetForm snippetForm){
         this.setSnippetId(snippetForm.getSnippetId());
         this.setTitle(snippetForm.getTitle());
-        this.setLanguage(language);
+        this.setLanguage(snippetForm.getLanguage());
         this.setCode(snippetForm.getCode());
         this.setCreatedAt(snippetForm.getCreatedAt());
         this.setUpdateAt(snippetForm.getUpdatedAt());

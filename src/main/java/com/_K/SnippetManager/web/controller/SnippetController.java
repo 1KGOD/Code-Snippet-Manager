@@ -10,6 +10,7 @@ import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +66,27 @@ public class SnippetController {
             model.addAttribute("showSuccessModal",true);
             return "user/usersnippet";
         }
+    }
+
+    @RequestMapping(value = "/user/snippet/list" , method = RequestMethod.GET)
+    public String snippetList(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "5") int size,
+                              @RequestParam(required = false)String keyword, @AuthenticationPrincipal UserDetails userDetails, Model model){
+        String email = userDetails.getUsername();
+        Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+        Page<SnippetForm> snippetForms = snippetService.getAllSnippets(page,size,keyword);
+        model.addAttribute("snippetForms",snippetForms.getContent());
+        for(SnippetForm snippetForm : snippetForms.getContent()){
+            System.out.println("User: " + snippetForm.getUser());
+            System.out.println("Language: " + snippetForm.getLanguage());
+        }
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPage", snippetForms.getTotalElements());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("user",user.orElse(null));
+        model.addAttribute("page", "snippetList");
+
+        return "user/usersnippetlist";
     }
 
 }
