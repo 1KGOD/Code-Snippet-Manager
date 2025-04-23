@@ -5,6 +5,7 @@ import com._K.SnippetManager.persistence.dao.LanguageDao;
 import com._K.SnippetManager.persistence.dao.SnippetDao;
 import com._K.SnippetManager.persistence.dao.UserDao;
 import com._K.SnippetManager.persistence.entity.Language;
+import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
@@ -74,18 +75,23 @@ public class SnippetController {
                               @RequestParam(required = false)String keyword, @AuthenticationPrincipal UserDetails userDetails, Model model){
         String email = userDetails.getUsername();
         Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
-        Page<SnippetForm> snippetForms = snippetService.getAllSnippets(page,size,keyword);
-        model.addAttribute("snippetForms",snippetForms.getContent());
-        for(SnippetForm snippetForm : snippetForms.getContent()){
-            System.out.println("User: " + snippetForm.getUser());
-            System.out.println("Language: " + snippetForm.getLanguage());
+        if(user.isPresent()){
+            User user1 = user.get();
+            System.out.println("User ID: " + user1.getUserID());
+            System.out.println("User Email: " + user1.getEmail());
+            System.out.println("User Name: " + user1.getName());
+            Page<SnippetForm> snippetForms = snippetService.getAllSnippets(user1.getUserID(), page,size,keyword);
+            System.out.println("Snippets found: " + snippetForms.getTotalElements());
+            for (SnippetForm snippet : snippetForms) {
+                System.out.println("Snippet Title: " + snippet.getTitle());
+            }
+            model.addAttribute("snippetForms",snippetForms.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPage", snippetForms.getTotalElements());
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("user",user.orElse(null));
+            model.addAttribute("page", "snippets");
         }
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPage", snippetForms.getTotalElements());
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("user",user.orElse(null));
-        model.addAttribute("page", "snippetList");
-
         return "user/usersnippetlist";
     }
 

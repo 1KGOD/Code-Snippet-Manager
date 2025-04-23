@@ -36,7 +36,7 @@ public class Snippet {
 
     @OneToMany(mappedBy = "snippet")
     @JsonIgnore
-    private List<Favorite> favorites;
+    private List<Rating> ratings;
 
     private LocalDateTime createdAt;
 
@@ -99,12 +99,12 @@ public class Snippet {
         this.language = language;
     }
 
-    public List<Favorite> getFavorites() {
-        return favorites;
+    public List<Rating> getFavorites() {
+        return ratings;
     }
 
-    public void setFavorites(List<Favorite> favorites) {
-        this.favorites = favorites;
+    public void setFavorites(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     public Boolean getDeleted() {

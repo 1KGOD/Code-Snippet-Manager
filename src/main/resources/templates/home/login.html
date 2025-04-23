@@ -43,12 +43,16 @@
 
                 <!-- Forget password link -->
                 <div class="mb-3 text-end">
-                    <a th:href="@{/request-reset}" class="forgot-link">Forgot password?</a>
+                    <a th:href="@{/request-resetpassword}" class="forgot-link">Forgot password?</a>
                 </div>
 
                 <!-- Submit -->
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+                <!-- Register link -->
+                <div class="message text-center mt-3">
+                    <p>Don't have an account? <a th:href="@{/register}" class="register-link">Register</a></p>
                 </div>
             </form>
 

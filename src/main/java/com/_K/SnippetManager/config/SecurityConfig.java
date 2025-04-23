@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
         http
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/home","/register","/login","/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/home","/register","/login","/request-resetpassword","/resetsuccess","/resetpassword/**","/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/dashboard").hasRole("USER")
                         .anyRequest().authenticated()

@@ -1,12 +1,9 @@
 package com._K.SnippetManager.persistence.dao;
 
-import com._K.SnippetManager.persistence.entity.Log;
+import com._K.SnippetManager.persistence.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface LogDao extends JpaRepository<Log,Long> {
-
+public interface NotificationDao extends JpaRepository<Notification,Long> {
 }

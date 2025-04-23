@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register | Code Snippet Manager</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/resetform.css}">
+</head>
+
+<body>
+
+<div class="floating-circles">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+<div class="success-wrapper">
+    <div class="success-message" th:if="${successMessage}">
+        <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#00f0ff" stroke-width="2"/>
+                <path d="M7 12l3 3 7-7" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2>Success!</h2>
+        <p th:text="${successMessage}">Your reset link is on the way 🚀</p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Bootstrap Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:src="@{/js/register.js}"></script>
+
+</body>
+</html>

@@ -1,12 +1,10 @@
 package com._K.SnippetManager.persistence.dao;
 
-import com._K.SnippetManager.persistence.entity.Favorite;
+import com._K.SnippetManager.persistence.entity.Rating;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface FavoriteDao extends JpaRepository<Favorite,Long> {
+public interface RatingDao extends JpaRepository<Rating,Long> {
 
 }

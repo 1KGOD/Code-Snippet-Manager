@@ -1,10 +1,14 @@
 package com._K.SnippetManager.web.controller;
 
+import com._K.SnippetManager.persistence.dao.PasswordResetTokenDao;
 import com._K.SnippetManager.persistence.dao.SnippetDao;
 import com._K.SnippetManager.persistence.dao.UserDao;
+import com._K.SnippetManager.persistence.entity.PasswordRestToken;
 import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
+import com._K.SnippetManager.service.PasswordService;
 import com._K.SnippetManager.service.UserService;
+import com._K.SnippetManager.service.impl.EmailService;
 import com._K.SnippetManager.service.impl.FileUploadService;
 import com._K.SnippetManager.web.form.UserForm;
 import jakarta.validation.Valid;
@@ -12,17 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class UserController {
@@ -31,13 +39,20 @@ public class UserController {
     private final UserDao userDao;
     private final SnippetDao snippetDao;
     private final FileUploadService fileUploadService;
+    private final EmailService emailService;
+    private final PasswordEncoder encoder;
+    private final PasswordResetTokenDao passwordResetTokenDao;
+    private final PasswordService passwordService;
 
-
-    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadService fileUploadService) {
+    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadService fileUploadService, EmailService emailService, PasswordEncoder encoder, PasswordResetTokenDao passwordResetTokenDao, PasswordService passwordService) {
         this.userService = userService;
         this.userDao = userDao;
         this.snippetDao = snippetDao;
         this.fileUploadService = fileUploadService;
+        this.emailService = emailService;
+        this.encoder = encoder;
+        this.passwordResetTokenDao = passwordResetTokenDao;
+        this.passwordService = passwordService;
     }
 
     @RequestMapping(value = "/register" , method = RequestMethod.GET)
@@ -51,15 +66,98 @@ public class UserController {
             if(bindingResult.hasErrors()){
                 return "home/register";
             }
-        userService.saveUser(userForm);
-                redirectAttributes.addFlashAttribute("showSuccessModal", true);
-                return "redirect:/login";
+            userService.saveUser(userForm);
+            redirectAttributes.addFlashAttribute("showSuccessModal", true);
+            return "redirect:/login";
 
     }
 
     @RequestMapping(value = "/login" , method = RequestMethod.GET)
     public String loginForm(){
         return "home/login";
+    }
+
+
+    @RequestMapping(value = "/request-resetpassword" , method = RequestMethod.GET)
+    public String resetPasswordForm(Model model){
+        model.addAttribute("request", new UserForm());
+        return "home/resetpassword";
+    }
+
+
+
+    @RequestMapping(value = "/resetsuccess" , method = RequestMethod.POST)
+    public String resetform(@ModelAttribute("userForm")UserForm userForm,Model model){
+
+        Optional<User> users = this.userDao.findByEmailAndIsDeletedFalse(userForm.getEmail());
+
+        if(users.isPresent()){
+            User user = users.get();
+//            System.out.println("User found: " + user.getEmail());
+            // Here you can implement the logic to send a reset password email
+            String token = UUID.randomUUID().toString();
+            PasswordRestToken resetToken = new PasswordRestToken();
+            resetToken.setToken(token);
+            resetToken.setExpired(LocalDateTime.now().plusMinutes(10));
+            resetToken.setUser(user);
+            passwordService.savePasswordToken(resetToken);
+
+            String resetLink = "http://localhost:8080/resetpassword?token=" + token;
+            emailService.sendResetMail(user.getEmail(), resetLink);
+            model.addAttribute("successMessage", "Password reset link has been sent to your email!");
+        }
+        return "home/resetsuccess";
+    }
+
+    @RequestMapping(value = "/resetpassword" , method = RequestMethod.GET)
+    public String handleResetForm(@RequestParam String token ,Model model){
+        Optional<PasswordRestToken> resetToken = passwordResetTokenDao.findByTokenAndUserIsDeletedFalse(token);
+        if(resetToken.isPresent() && resetToken.get().getExpired().isAfter(LocalDateTime.now())){
+
+
+            // Token is valid, show the reset password form
+            UserForm userForm = new UserForm();
+            userForm.setToken(resetToken.get().getToken());
+            userForm.setEmail(resetToken.get().getUser().getEmail());
+            model.addAttribute("userForm", userForm );
+        }
+
+        return "home/resetform";
+    }
+
+    @RequestMapping(value = "/resetpassword" , method = RequestMethod.POST)
+    public String handleReset(@RequestParam String token ,@Valid @ModelAttribute("userForm")UserForm userForm,BindingResult bindingResult, Model model){
+        Optional<PasswordRestToken> resetToken = passwordResetTokenDao.findByTokenAndUserIsDeletedFalse(token);
+        if(bindingResult.hasErrors()){
+            System.out.println("Validation error: " + bindingResult.getAllErrors());
+            return "home/resetform";
+        }
+        if (resetToken.isPresent() && resetToken.get().getExpired().isAfter(LocalDateTime.now())){
+
+            // Token is valid, update the user's password
+            User user = resetToken.get().getUser();
+
+            user.setPassword(encoder.encode(userForm.getPassword()));
+            user.setUpdateAt(LocalDateTime.now());
+            user.setName(user.getName());
+            user.setEmail(user.getEmail());
+            userDao.save(user);
+
+            System.out.println("Password updated for user: " + user.getEmail());
+            System.out.println("New password: " + userForm.getPassword());
+            System.out.println("Token expired at: " + resetToken.get().getExpired());
+            System.out.println("User ID: " + user.getUserID());
+            System.out.println("User name: " + user.getName());
+            System.out.println("Updated at: " + user.getUpdateAt());
+
+
+            // Delete the token after use
+            passwordResetTokenDao.delete(resetToken.get());
+        }
+        System.out.println("Token -> "+resetToken.get().getToken());
+        System.out.println("Email -> "+resetToken.get().getUser().getEmail());
+        // Redirect to login page with success message
+        return "redirect:/login?resetSuccess";
     }
 
 

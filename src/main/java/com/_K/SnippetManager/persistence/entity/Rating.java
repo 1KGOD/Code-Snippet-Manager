@@ -7,15 +7,17 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "favorite")
+@Table(name = "rating")
 @Getter
 @Setter
-public class Favorite {
+public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favoriteId")
-    private Long favoriteId;
+    @Column(name = "ratingId")
+    private Long ratingId;
+
+    private int score; // e.g. 1-5
 
     @ManyToOne
     @JoinColumn(name = "userId")
@@ -26,12 +28,12 @@ public class Favorite {
     private Snippet snippet;
 
 
-    public Long getFavoriteId() {
-        return favoriteId;
+    public Long getRatingId() {
+        return ratingId;
     }
 
-    public void setFavoriteId(Long favoriteId) {
-        this.favoriteId = favoriteId;
+    public void setRatingId(Long ratingId) {
+        this.ratingId = ratingId;
     }
 
     public User getUser() {
@@ -50,14 +52,6 @@ public class Favorite {
         this.snippet = snippet;
     }
 
-    public LocalDateTime getFavoritedAt() {
-        return favoritedAt;
-    }
 
-    public void setFavoritedAt(LocalDateTime favoritedAt) {
-        this.favoritedAt = favoritedAt;
-    }
-
-    private LocalDateTime favoritedAt;
 
 }

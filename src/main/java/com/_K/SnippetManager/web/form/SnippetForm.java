@@ -1,11 +1,10 @@
 package com._K.SnippetManager.web.form;
 
-import com._K.SnippetManager.persistence.entity.Favorite;
+import com._K.SnippetManager.persistence.entity.Rating;
 import com._K.SnippetManager.persistence.entity.Language;
 import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class SnippetForm {
 
     private User user;
 
-    private Favorite favorite;
+    private Rating rating;
 
     private String code;
 
@@ -47,12 +46,12 @@ public class SnippetForm {
     public SnippetForm(){}
 
 
-    public Favorite getFavorite() {
-        return favorite;
+    public Rating getFavorite() {
+        return rating;
     }
 
-    public void setFavorite(Favorite favorite) {
-        this.favorite = favorite;
+    public void setFavorite(Rating rating) {
+        this.rating = rating;
     }
 
     public String getCode() {

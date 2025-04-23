@@ -18,7 +18,6 @@ public class UserForm {
     @Valid
     private Long userId;
 
-    @NotNull(message = "Name cannot be null")
     @Size(min = 2, message = "Name must be at least 2 characters long")
     private String name;
 
@@ -28,19 +27,23 @@ public class UserForm {
     @Column(unique = true)
     private String email;
 
-
-    @Size(min = 3 , message = "Password must be at least 3 characters long")
+    @Pattern(
+            regexp = "^(?=.{5,15}$)(?=[A-Za-z])[A-Za-z\\d]*[A-Z]+[A-Za-z\\d]*[a-z]+[A-Za-z\\d]*\\d+[A-Za-z\\d]*$"
+            ,
+            message = "Password must start with a letter, be 5-15 characters, with at least one uppercase, one lowercase, and one number"
+    )
     private String password;
 
-    private List<PasswordRestToken> passwordRestTokens;
+
+    private String token;
 
     private Role role;
 
-    private List<Favorite> favorite;
+    private List<Rating> rating;
 
     private List<Snippet> snippet;
 
-    private List<Log> logs;
+    private List<Notification> notifications;
 
     private MultipartFile profileImage;
 
@@ -55,10 +58,10 @@ public class UserForm {
         this.setName(user.getName());
         this.setEmail(user.getEmail());
         this.setPassword(user.getPassword());
-        this.setPasswordRestTokens(user.getPasswordRestTokens());
+        this.setToken(user.getPasswordRestToken().getFirst().getToken());
         this.setRole(user.getRole());
-        this.setFavorite(user.getFavorite());
-        this.setLogs(user.getLogs());
+        this.setRating(user.getRating());
+        this.setNotifications(user.getNotifications());
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdateAt(user.getUpdateAt());
         this.setDeleted(user.getDeleted());
@@ -66,16 +69,13 @@ public class UserForm {
 
     public UserForm(){}
 
-    public List<PasswordRestToken> getPasswordRestTokens() {
-        return passwordRestTokens;
+    public String getToken() {
+        return token;
     }
 
-    public void setPasswordRestTokens(List<PasswordRestToken> passwordRestTokens) {
-        this.passwordRestTokens = passwordRestTokens;
+    public void setToken(String token) {
+        this.token = token;
     }
-
-
-
 
     public Role getRole() {
         return role;
@@ -85,12 +85,12 @@ public class UserForm {
         this.role = role;
     }
 
-    public List<Favorite> getFavorite() {
-        return favorite;
+    public List<Rating> getFavorite() {
+        return rating;
     }
 
-    public void setFavorite(List<Favorite> favorite) {
-        this.favorite = favorite;
+    public void setFavorite(List<Rating> rating) {
+        this.rating = rating;
     }
 
     public List<Snippet> getSnippet() {
@@ -101,12 +101,20 @@ public class UserForm {
         this.snippet = snippet;
     }
 
-    public List<Log> getLogs() {
-        return logs;
+    public List<Rating> getRating() {
+        return rating;
     }
 
-    public void setLogs(List<Log> logs) {
-        this.logs = logs;
+    public void setRating(List<Rating> rating) {
+        this.rating = rating;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public MultipartFile getProfileImage() {
@@ -157,12 +165,10 @@ public class UserForm {
         this.email = email;
     }
 
-
-    public @Size(min = 3, message = "Password must be at least 3 characters long") String getPassword() {
+    public String getPassword() {
         return password;
     }
-
-    public void setPassword(@Size(min = 3, message = "Password must be at least 3 characters long") String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

@@ -7,10 +7,7 @@ import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,14 +36,14 @@ public class SnippetServiceImpl implements SnippetService {
     }
 
     @Override
-    public Page<SnippetForm> getAllSnippets(int page, int size, String keyword) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<SnippetForm> getAllSnippets(Long userId, int page, int size, String keyword) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Snippet> snippets;
 
         if (keyword != null && !keyword.isEmpty()) {
-            snippets = snippetDao.findBySearchTerm(keyword, pageable);
+            snippets = snippetDao.findUserSnippetsByKeyword(userId ,keyword, pageable);
         } else {
-            snippets = snippetDao.findByIsDeletedFalse(pageable);
+            snippets = snippetDao.findByUserUserIDAndIsDeletedFalse(userId,pageable);
         }
 
         List<SnippetForm> snippetForms = snippets.getContent().stream()

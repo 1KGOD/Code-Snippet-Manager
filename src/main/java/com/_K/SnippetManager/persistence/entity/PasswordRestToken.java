@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "pwd")
@@ -44,9 +45,7 @@ public class PasswordRestToken {
         return expired;
     }
 
-    public void setExpired(LocalDateTime expired) {
-        this.expired = expired;
-    }
+
 
     public User getUser() {
         return user;
@@ -54,5 +53,9 @@ public class PasswordRestToken {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setExpired(LocalDateTime expired) {
+        this.expired = expired;
     }
 }

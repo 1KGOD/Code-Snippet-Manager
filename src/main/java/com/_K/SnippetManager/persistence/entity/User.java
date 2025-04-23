@@ -31,7 +31,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private List<PasswordRestToken> passwordRestTokens;
+    private  List<PasswordRestToken> passwordRestToken;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId")
@@ -39,15 +39,14 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private List<Favorite> favorite;
+    private List<Rating> rating;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Snippet> snippet;
 
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    private List<Log> logs;
+    private List<Notification> notifications;
 
     private LocalDateTime createdAt;
 
@@ -59,21 +58,32 @@ public class User {
 
 
     public User(UserForm userForm){
-
         this.setUserID(userForm.getUserId());
         this.setName(userForm.getName());
         this.setEmail(userForm.getEmail());
         this.setPassword(userForm.getPassword());
-        this.setPasswordRestTokens(userForm.getPasswordRestTokens());
         this.setRole(userForm.getRole());
-        this.setFavorite(userForm.getFavorite());
+        this.setNotifications(userForm.getNotifications());
+        this.setRating(userForm.getRating());
         this.setSnippet(userForm.getSnippet());
-        this.setLogs(userForm.getLogs());
         this.setCreatedAt(userForm.getCreatedAt());
         this.setUpdateAt(userForm.getUpdateAt());
         this.setDeleted(userForm.getDeleted());
     }
 
+    public User(User user){
+        this.setUserID(user.getUserID());
+        this.setName(user.getName());
+        this.setEmail(user.getEmail());
+        this.setPassword(user.getPassword());
+        this.setRole(user.getRole());
+        this.setNotifications(user.getNotifications());
+        this.setRating(user.getRating());
+        this.setSnippet(user.getSnippet());
+        this.setCreatedAt(user.getCreatedAt());
+        this.setUpdateAt(user.getUpdateAt());
+        this.setDeleted(user.getDeleted());
+    }
 
 
     public LocalDateTime getUpdateAt() {
@@ -84,12 +94,28 @@ public class User {
         this.updateAt = updateAt;
     }
 
-    public List<PasswordRestToken> getPasswordRestTokens() {
-        return passwordRestTokens;
+    public List<PasswordRestToken> getPasswordRestToken() {
+        return passwordRestToken;
     }
 
-    public void setPasswordRestTokens(List<PasswordRestToken> passwordRestTokens) {
-        this.passwordRestTokens = passwordRestTokens;
+    public void setPasswordRestToken(List<PasswordRestToken> passwordRestToken) {
+        this.passwordRestToken = passwordRestToken;
+    }
+
+    public List<Rating> getRating() {
+        return rating;
+    }
+
+    public void setRating(List<Rating> rating) {
+        this.rating = rating;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public Long getUserID() {
@@ -132,12 +158,12 @@ public class User {
         this.role = role;
     }
 
-    public List<Favorite> getFavorite() {
-        return favorite;
+    public List<Rating> getFavorite() {
+        return rating;
     }
 
-    public void setFavorite(List<Favorite> favorite) {
-        this.favorite = favorite;
+    public void setFavorite(List<Rating> rating) {
+        this.rating = rating;
     }
 
     public List<Snippet> getSnippet() {
@@ -146,14 +172,6 @@ public class User {
 
     public void setSnippet(List<Snippet> snippet) {
         this.snippet = snippet;
-    }
-
-    public List<Log> getLogs() {
-        return logs;
-    }
-
-    public void setLogs(List<Log> logs) {
-        this.logs = logs;
     }
 
     public LocalDateTime getCreatedAt() {

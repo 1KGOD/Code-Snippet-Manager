@@ -7,5 +7,5 @@ import org.springframework.data.domain.Page;
 public interface SnippetService {
 
     void saveSnippet(SnippetForm snippetForm , User users);
-    Page<SnippetForm> getAllSnippets(int page, int size , String keywork);
+    Page<SnippetForm> getAllSnippets(Long userId,int page, int size , String keywork);
 }
