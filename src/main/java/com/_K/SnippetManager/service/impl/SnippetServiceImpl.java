@@ -11,6 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SnippetServiceImpl implements SnippetService {
@@ -53,6 +54,32 @@ public class SnippetServiceImpl implements SnippetService {
         return new PageImpl<>(snippetForms, pageable, snippets.getTotalElements());
     }
 
+    @Override
+    public void editSnippet(SnippetForm snippetForm, User user) {
+        Optional<Snippet> snippet = snippetDao.findBySnippetIdAndUserAndIsDeletedFalse(snippetForm.getSnippetId(),user);
+        if(snippet.isPresent()){
+            Snippet snippet1 = snippet.get();
+            snippet1.setTitle(snippetForm.getTitle());
+            snippet1.setCode(snippetForm.getCode());
+            snippet1.setLanguage(snippetForm.getLanguage());
+            snippet1.setUpdateAt(LocalDateTime.now());
+            snippet1.setUser(user);
+            snippetDao.save(snippet1);
+        }
+    }
+
+    @Override
+    public void deleteSnippet(Long snippetId, User user) {
+        Optional<Snippet> snippet = snippetDao.findBySnippetIdAndUserAndIsDeletedFalse(snippetId, user);
+        if(snippet.isPresent()){
+            Snippet snippet1 = snippet.get();
+            if(!Boolean.TRUE.equals(snippet1.getDeleted())){
+                snippet1.setDeleted(true);
+                snippet1.setUpdateAt(LocalDateTime.now());
+                snippetDao.save(snippet1);
+            }
+        }
+    }
 
 
 }

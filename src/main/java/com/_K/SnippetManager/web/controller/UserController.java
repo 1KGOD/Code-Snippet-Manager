@@ -8,14 +8,12 @@ import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.PasswordService;
 import com._K.SnippetManager.service.UserService;
-import com._K.SnippetManager.service.impl.EmailService;
-import com._K.SnippetManager.service.impl.FileUploadService;
+import com._K.SnippetManager.service.impl.EmailServiceImpl;
+import com._K.SnippetManager.service.impl.FileUploadServiceImpl;
 import com._K.SnippetManager.web.form.UserForm;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,18 +35,18 @@ public class UserController {
     private final UserService userService;
     private final UserDao userDao;
     private final SnippetDao snippetDao;
-    private final FileUploadService fileUploadService;
-    private final EmailService emailService;
+    private final FileUploadServiceImpl fileUploadServiceImpl;
+    private final EmailServiceImpl emailServiceImpl;
     private final PasswordEncoder encoder;
     private final PasswordResetTokenDao passwordResetTokenDao;
     private final PasswordService passwordService;
 
-    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadService fileUploadService, EmailService emailService, PasswordEncoder encoder, PasswordResetTokenDao passwordResetTokenDao, PasswordService passwordService) {
+    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadServiceImpl fileUploadServiceImpl, EmailServiceImpl emailServiceImpl, PasswordEncoder encoder, PasswordResetTokenDao passwordResetTokenDao, PasswordService passwordService) {
         this.userService = userService;
         this.userDao = userDao;
         this.snippetDao = snippetDao;
-        this.fileUploadService = fileUploadService;
-        this.emailService = emailService;
+        this.fileUploadServiceImpl = fileUploadServiceImpl;
+        this.emailServiceImpl = emailServiceImpl;
         this.encoder = encoder;
         this.passwordResetTokenDao = passwordResetTokenDao;
         this.passwordService = passwordService;
@@ -103,7 +100,7 @@ public class UserController {
             passwordService.savePasswordToken(resetToken);
 
             String resetLink = "http://localhost:8080/resetpassword?token=" + token;
-            emailService.sendResetMail(user.getEmail(), resetLink);
+            emailServiceImpl.sendResetMail(user.getEmail(), resetLink);
             model.addAttribute("successMessage", "Password reset link has been sent to your email!");
         }
         return "home/resetsuccess";
@@ -239,7 +236,7 @@ public class UserController {
             // Handle file upload
             if (userForm.getProfileImage() != null && !userForm.getProfileImage().isEmpty()) {
                 System.out.println("Profile image is present.");
-                String uploadedFilePath = fileUploadService.uploadFile(userForm.getProfileImage());
+                String uploadedFilePath = fileUploadServiceImpl.uploadFile(userForm.getProfileImage());
                 user.setProfileImage(uploadedFilePath); // Save the file path to the user entity
             }
             userService.updateUser(user);

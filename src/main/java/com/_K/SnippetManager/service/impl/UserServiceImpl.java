@@ -42,7 +42,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(User user) {
-        System.out.println("Updating user: " + user.getEmail());
         userDao.save(user);
     }
 

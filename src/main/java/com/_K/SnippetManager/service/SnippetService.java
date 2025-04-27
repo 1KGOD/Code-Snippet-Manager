@@ -8,4 +8,6 @@ public interface SnippetService {
 
     void saveSnippet(SnippetForm snippetForm , User users);
     Page<SnippetForm> getAllSnippets(Long userId,int page, int size , String keywork);
+    void editSnippet(SnippetForm snippetForm,User user);
+    void deleteSnippet(Long snippetId, User user);
 }

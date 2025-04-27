@@ -24,6 +24,7 @@
 <body class="dark-theme">
 
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" th:if="${showSuccessModal}">
+
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -38,6 +39,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Navbar -->
 <div class="navbar d-flex align-items-center px-4 py-3 mb-4">
@@ -99,11 +101,15 @@
                     <td th:text="${#strings.abbreviate(snippetForm.code, 50)}">Code</td>
                     <td th:text="${snippetForm.user != null ? snippetForm.user.name : 'N/A'}">User</td>
                     <td>
-                        <a th:href="@{/user/snippet/edit/{id}(id=${snippetForm.snippetId})}"
+                        <a th:href="@{/user/snippet/view(snippetId=${snippetForm.snippetId})}"
+                           class="btn btn-outline-secondary btn-sm me-2" title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a th:href="@{/user/snippet/edit(snippetId=${snippetForm.snippetId})}"
                            class="btn btn-outline-info btn-sm me-2">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a th:href="@{/user/snippet/delete/{id}(id=${snippetForm.snippetId})}"
+                        <a th:href="@{/user/snippet/delete(snippetId=${snippetForm.snippetId})}"
                            class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-trash-alt"></i>
                         </a>
@@ -163,6 +169,7 @@
         </div>
     </div>
 
+
 </div>
 
 <!-- Bootstrap Bundle -->
@@ -207,6 +214,8 @@
         const modal = new bootstrap.Modal(document.getElementById('successModal'));
         modal.show();
     }
+
+
 
 
 </script>

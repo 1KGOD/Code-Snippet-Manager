@@ -9,6 +9,7 @@ import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import com._K.SnippetManager.service.SnippetService;
 import com._K.SnippetManager.web.form.SnippetForm;
+import com._K.SnippetManager.web.form.UserForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +57,7 @@ public class SnippetController {
     }
 
     @RequestMapping(value = "/user/snippet/add" , method = RequestMethod.POST)
-    public String snippetAdd(@AuthenticationPrincipal UserDetails userDetail,@Valid @ModelAttribute("snippetForm")SnippetForm snippetForm, BindingResult bindingResult ,Model model ){
+    public String snippetAdd(@AuthenticationPrincipal UserDetails userDetail, @Valid @ModelAttribute("snippetForm")SnippetForm snippetForm, BindingResult bindingResult , RedirectAttributes redirectAttributes , Model model){
         String email = userDetail.getUsername();
         Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
         List<Language> lang = languageDao.findAll();
@@ -64,8 +67,8 @@ public class SnippetController {
             snippetService.saveSnippet(snippetForm,user.orElse(null));
             model.addAttribute("lang",lang);
             model.addAttribute("user",user.orElse(null));
-            model.addAttribute("showSuccessModal",true);
-            return "user/usersnippet";
+            redirectAttributes.addFlashAttribute("showSuccessModal",true);
+            return "redirect:/user/snippet/list";
         }
     }
 
@@ -75,6 +78,7 @@ public class SnippetController {
                               @RequestParam(required = false)String keyword, @AuthenticationPrincipal UserDetails userDetails, Model model){
         String email = userDetails.getUsername();
         Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+
         if(user.isPresent()){
             User user1 = user.get();
             System.out.println("User ID: " + user1.getUserID());
@@ -95,4 +99,73 @@ public class SnippetController {
         return "user/usersnippetlist";
     }
 
+    @RequestMapping(value = "/user/snippet/view" , method = RequestMethod.GET)
+    public String snippetView(@RequestParam("snippetId") Long snippetId, @AuthenticationPrincipal UserDetails userDetails, Model model){
+        String email = userDetails.getUsername();
+        Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+        List<Language> lang = languageDao.findAll();
+        Optional<Snippet> snippet = snippetDao.findById(snippetId);
+
+        if(snippet.isPresent()){
+            SnippetForm snippetForm = new SnippetForm(snippet.get());
+            System.out.println("Snippet ID: " + snippetForm.getSnippetId());
+            model.addAttribute("snippetForm", snippetForm);
+            model.addAttribute("lang",lang);
+            model.addAttribute("user",user.orElse(null));
+            model.addAttribute("page", "snippet");
+        }
+
+        return "user/usersnippetdetails";
+    }
+
+    @RequestMapping(value = "/user/snippet/edit" , method = RequestMethod.GET)
+    public String snippetEdit(@RequestParam("snippetId") Long snippetId, @AuthenticationPrincipal UserDetails userDetails, Model model){
+        String email = userDetails.getUsername();
+        Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+        List<Language> lang = languageDao.findAll();
+        Optional<Snippet> snippet = snippetDao.findById(snippetId);
+
+        if(snippet.isPresent()){
+            SnippetForm snippetForm = new SnippetForm(snippet.get());
+            System.out.println("Snippet ID: " + snippetForm.getSnippetId());
+            model.addAttribute("snippetForm", snippetForm);
+            model.addAttribute("lang",lang);
+            model.addAttribute("user",user.orElse(null));
+            model.addAttribute("page", "snippet");
+        }
+
+        return "user/usersnippetedit";
+    }
+
+    @RequestMapping(value = "/user/snippet/edit" , method = RequestMethod.POST)
+    public String snippetUpdate(@RequestParam("snippetId")Long snippetId , @AuthenticationPrincipal UserDetails userDetails, @Valid @ModelAttribute("snippetForm")SnippetForm snippetForm, BindingResult bindingResult ,Model model ) {
+        String email = userDetails.getUsername();
+        Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+        List<Language> lang = languageDao.findAll();
+
+        if (bindingResult.hasErrors()) {
+            System.out.println("Error: " + bindingResult.getAllErrors());
+        }
+        if (user.isPresent()) {
+            User user1 = user.get();
+            snippetService.editSnippet(snippetForm,user1);
+            System.out.println("Snippet Created: " + snippetForm.getCreatedAt());
+        }
+        return "redirect:/user/snippet/list";
+    }
+
+    @RequestMapping(value = "/user/snippet/delete" , method = RequestMethod.GET)
+    public String snippetDelete(@RequestParam("snippetId") Long snippetId, @AuthenticationPrincipal UserDetails userDetails, Model model){
+        String email = userDetails.getUsername();
+        Optional<User> user = userDao.findByEmailAndIsDeletedFalse(email);
+        List<Language> lang = languageDao.findAll();
+
+        if(user.isPresent()){
+            User user1 = user.get();
+            snippetService.deleteSnippet(snippetId,user1);
+            System.out.println("Snippet Deleted: " + LocalDateTime.now());
+        }
+
+        return "redirect:/user/snippet/list";
+    }
 }

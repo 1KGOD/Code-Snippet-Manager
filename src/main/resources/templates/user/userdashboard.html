@@ -81,7 +81,7 @@
                         Created: <span th:text="${#temporals.format(snippet.createdAt, 'yyyy-MM-dd')}">2024-04-18</span>
                     </div>
                 </div>
-                <a th:href="@{'/user/snippet/' + ${snippet.snippetId}}" class="view-btn">View</a>
+                <a th:href="@{/user/snippet/view(snippetId=${snippet.snippetId})}" class="view-btn">View</a>
             </div>
         </div>
 

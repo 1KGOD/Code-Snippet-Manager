@@ -1,6 +1,5 @@
 package com._K.SnippetManager.service.impl;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class FileUploadService {
+public class FileUploadServiceImpl {
 
     private final String uploadDir = System.getProperty("user.home") + "/uploads/";
 
