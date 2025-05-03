@@ -66,10 +66,40 @@
     </div>
     <!-- Search bar -->
     <div class="container py-5">
-        <div th:each="snippet : ${snippetForm}" class="snippet-card">
-            <h2 th:text="${snippet.title}"></h2>
-            <p><strong>Language:</strong> <span th:text="${snippet.language.name}"></span></p>
-            <pre><code th:class="'language-' + ${snippet.language.name.toLowerCase()}" th:text="${snippet.code}"></code></pre>
+        <div th:each="snippet : ${snippetForm}" class="snippet-card position-relative p-4 mb-4 rounded-4 shadow" style="background-color: #1e1e2f; color: #fff;" >
+            <h2 th:text="${snippet.title}"  class="mb-2 fw-semibold text-info"></h2>
+            <p class="mb-2"><strong>Language:</strong> <span th:text="${snippet.language.name}"></span></p>
+            <pre>
+                <code th:id="|code-${snippet.snippetId}|"
+                      th:class="|language-${snippet.language.name.toLowerCase()}|"
+                      th:text="${snippet.code}">
+                </code>
+            </pre>
+        <div class="d-flex justify-content-end mt-3" style="gap: 10px;">
+
+            <!-- Toast container -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+                <div id="copy-toast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ✅ Copied successfully!
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-outline-light"
+                    th:attr="onclick=|copyToClipboard('code-${snippet.snippetId}')|">
+                <i class="bi bi-clipboard"></i> Copy
+            </button>
+
+            <form th:action="@{/user/snippet/publish}" method="post" class="d-inline">
+                <input type="hidden" name="snippetId" th:value="${snippet.snippetId}"/>
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-upload"></i> Publish
+                </button>
+            </form>
+        </div>
         </div>
 
         <!-- Logout Modal -->
@@ -90,6 +120,8 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 
 </div>
@@ -140,6 +172,33 @@
     }
 
     hljs.highlightAll();
+
+     function copyToClipboard(elementId) {
+    const codeBlock = document.getElementById(elementId);
+    if (codeBlock) {
+      const text = codeBlock.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        showBootstrapToast(`✅ Copied: ${truncateText(text, 60)}`);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+  }
+
+  function showBootstrapToast(message) {
+    const toastEl = document.getElementById('copy-toast');
+    const toastBody = toastEl.querySelector('.toast-body');
+    toastBody.textContent = message;
+
+    const bsToast = new bootstrap.Toast(toastEl);
+    bsToast.show();
+  }
+
+  function truncateText(str, maxLength) {
+    return str.length > maxLength ? str.substring(0, maxLength) + "..." : str;
+  }
+
+
 </script>
 
 </body>

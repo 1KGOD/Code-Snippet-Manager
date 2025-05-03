@@ -1,10 +1,350 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Code Snippet Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <link rel="stylesheet" th:href="@{/css/home.css}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
 </head>
 <body>
 
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="logo-icon">&lt;/&gt;</span>
+    <span class="logo-text">CodeSnippetManager</span>
+  </div>
+
+  <div class="navbar-center">
+    <a href="#" class="nav-link">Home</a>
+    <a href="#" class="nav-link">Snippets</a>
+    <a href="#" class="nav-link">Favorites</a>
+  </div>
+
+  <div class="navbar-right">
+    <div class="navbar-actions">
+      <!-- Notification Bell -->
+      <div class="notification-dropdown" onclick="toggleNotification(event)">
+        <i class="fas fa-bell bell-icon"></i>
+
+        <!-- Count Badge -->
+        <span class="notification-count"
+              th:if="${notifications != null and !notifications.isEmpty()}"
+              th:text="${notifications.size()}">0</span>
+
+        <!-- Notification Popup -->
+        <div class="notification-popup">
+          <div class="notification-title">Notifications</div>
+
+          <div th:if="${notifications != null and notifications.size() > 0}">
+            <div th:each="notif : ${notifications}" class="notification-item">
+              <span th:text="${notif.message}">Someone starred your snippet!</span>
+              <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'yyyy-MM-dd HH:mm')}">Now</div>
+            </div>
+          </div>
+
+          <div th:if="${notifications == null or notifications.isEmpty()}">
+            <div class="notification-item">No new notifications</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Profile Dropdown -->
+      <div class="profile-dropdown" onclick="toggleDropdown(this)">
+        <img  th:if="${user.profileImage != null}" th:src="@{${user.profileImage}}" alt="Profile" class="avatar" />
+        <img  th:if="${user.profileImage == null}" th:src="@{/img/default-profile.jpg}" alt="Profile" class="avatar" />
+        <span class="username" th:text="${user.name}">Alex Carter</span>
+        <div class="dropdown-menu">
+          <a th:href="@{/user/dashboard}">Profile</a>
+          <a th:href="@{/logout}">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section with modern Illustrator Design -->
+<section class="hero-section">
+
+  <!-- Hero Content (Left Side) -->
+  <div class="hero-content">
+    <h1>Organize. Share. Master Your Code.</h1>
+    <p>Create, favorite, and manage code snippets like a pro.</p>
+  </div>
+
+  <!-- Floating Card on the Right Side -->
+  <div class="floating-card modern-glass">
+    <div class="card-header">
+      <i class="fas fa-code"></i> <!-- Code Icon -->
+    </div>
+    <p class="card-desc">Showcase your best code snippets in a beautiful way and stay organized.</p>
+    <a th:href="@{/register}" class="card-btn">
+      <i class="fas fa-rocket"></i> Start Now <!-- Rocket Icon with Start Now Text -->
+    </a>
+  </div>
+
+  <!-- Trend Illustrator Design (Full Width + Animation) -->
+  <div class="hero-illustrator-before">
+    <!-- Modern Animated SVG Background with Smooth Reverse -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" class="hero-svg">
+      <defs>
+        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <!-- Modern Gradient (Purple to Neon Blue) -->
+          <stop offset="0%" style="stop-color:#bf00ff;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.9" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#gradient1)">
+        <animate attributeName="d"
+                 dur="12s"
+                 repeatCount="indefinite"
+                 fill="freeze"
+                 calcMode="spline"
+                 keyTimes="0; 0.5; 1"
+                 keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+                 values="
+          M0,250 Q400,400 800,250 Q1200,100 1600,250 L1600,500 L0,500 Z;
+          M0,300 Q400,500 800,300 Q1200,50 1600,300 L1600,500 L0,500 Z;
+          M0,250 Q400,400 800,250 Q1200,100 1600,250 L1600,500 L0,500 Z"/>
+      </path>
+    </svg>
+  </div>
+
+</section>
+
+
+
+<!-- 🔥 Modern Sliding Text Banner -->
+<div class="sliding-banner">
+  <div class="sliding-text">
+    <span>
+      <i class="fas fa-code"></i> Code Snippet Manager
+      <i class="fas fa-bolt"></i> Build Fast
+      <i class="fas fa-cloud-upload-alt"></i> Share Code
+      <i class="fas fa-users"></i> Collaborate
+      <i class="fas fa-layer-group"></i> Organize
+      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
+      &nbsp;&nbsp;&nbsp;
+    </span>
+    <!-- Duplicate span for seamless looping -->
+    <span>
+      <i class="fas fa-code"></i> Code Snippet Manager
+      <i class="fas fa-bolt"></i> Build Fast
+      <i class="fas fa-cloud-upload-alt"></i> Share Code
+      <i class="fas fa-users"></i> Collaborate
+      <i class="fas fa-layer-group"></i> Organize
+      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
+      &nbsp;&nbsp;&nbsp;
+    </span>
+    <span>
+      <i class="fas fa-code"></i> Code Snippet Manager
+      <i class="fas fa-bolt"></i> Build Fast
+      <i class="fas fa-cloud-upload-alt"></i> Share Code
+      <i class="fas fa-users"></i> Collaborate
+      <i class="fas fa-layer-group"></i> Organize
+      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
+      &nbsp;&nbsp;&nbsp;
+    </span>
+  </div>
+</div>
+
+<!-- Snippet Cards -->
+<!-- Snippet Cards -->
+<section class="popular-snippets">
+  <h2 class="section-title" style="color: #00d4ff;">
+    <i class="fas fa-fire"></i> <!-- Fire Icon -->
+    Most Popular Snippets
+  </h2>
+
+
+  <!-- Search Bar Below Title -->
+<!--  <form class="search-form" style="margin-bottom: 20px;">-->
+<!--    <input type="text" placeholder="Search snippets..." />-->
+<!--    <button type="submit">-->
+<!--      <i class="fas fa-search"></i> &lt;!&ndash; Search Icon &ndash;&gt;-->
+<!--    </button>-->
+<!--  </form>-->
+
+
+  <div class="cards-container">
+    <!-- Snippet Card -->
+    <div th:each="snippet : ${snippets}" class="modern-snippet-card">
+      <!-- Header -->
+      <div class="card-header">
+        <div class="user-info">
+          <div th:if="${snippet.user != null}">
+            <img th:if="${snippet.user.profileImage != null}"
+                 th:src="@{${snippet.user.profileImage}}"
+                 alt="User" class="avatar"/>
+
+            <img th:if="${snippet.user.profileImage == null}"
+                 th:src="@{/img/default-profile.jpg}"
+                 alt="User" class="avatar"/>
+          </div>
+
+          <div th:if="${snippet.user == null}">
+            <img th:src="@{/img/default-profile.jpg}"
+                 alt="User" class="avatar"/>
+          </div>
+
+
+          <div>
+            <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
+            <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">Apr 30, 2025</div>
+          </div>
+        </div>
+        <span class="language-tag" th:text="${snippet.language.name}">JavaScript</span>
+      </div>
+      <!-- Title -->
+      <div class="snippet-title" th:text="${snippet.title}"> Custom Logger Utility for Debugging</div>
+      <!-- Code Block -->
+      <pre class="code-block"><code th:class="'language-' + ${snippet.language.name}" th:text="${#strings.abbreviate(snippet.code, 80)}">console.log("Hello, modern UI!");</code></pre>
+      <div class="snippet-footer">
+        <form th:action="@{rating/star(snippetId=${snippet.snippetId})}" method="post" style="display: inline;">
+          <input type="hidden" name="snippetId" th:value="${snippet.snippetId}" />
+          <button type="submit" class="star-btn">
+            <i class="fas fa-star"></i> <span th:text="${snippet.getRatings().size()}">0</span>
+          </button>
+        </form>
+        <button class="contact-btn contact-trigger"
+                th:attr="data-name=${snippet.user.name},
+                 data-email=${snippet.user.email},
+                 data-avatar=${snippet.user.profileImage}">
+          <i class="fas fa-envelope"></i> Contact
+        </button>
+      </div>
+      <!-- Comment Section -->
+      <div class="comment-section">
+        <div class="comment-input-row">
+          <input type="text" class="comment-input" placeholder="Add a comment..." />
+          <button class="message-icon">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="comments-list">
+          <div class="comment-bubble"><strong>Alice</strong>: Awesome!</div>
+          <div class="comment-bubble"><strong>Bob</strong>: 🔥🔥🔥</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="contact-modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeContactModal()">×</button>
+      <img id="modal-avatar" class="modal-avatar" />
+      <h2 id="modal-name"></h2>
+      <p id="modal-email"></p>
+
+      <!-- QR Code Container -->
+      <div id="qr-code-container"></div> <!-- Dynamic QR code will be inserted here -->
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<script th:inline="javascript">
+  function toggleDropdown(element) {
+  // Close all other dropdowns
+  document.querySelectorAll('.profile-dropdown').forEach(drop => {
+    if (drop !== element) {
+      drop.classList.remove('active');
+    }
+  });
+
+  // Toggle this one
+  element.classList.toggle('active');
+}
+
+// Close dropdown if clicked outside
+document.addEventListener('click', function (event) {
+  const isDropdown = event.target.closest('.profile-dropdown');
+  if (!isDropdown) {
+    document.querySelectorAll('.profile-dropdown').forEach(drop => drop.classList.remove('active'));
+  }
+});
+
+function openContactModal(name, email, avatar) {
+ document.getElementById('modal-name').textContent = name;
+ document.getElementById('modal-email').textContent = email;
+ document.getElementById('modal-avatar').src = avatar;
+
+ // Generate QR code dynamically
+ var qrCodeContainer = document.getElementById('qr-code-container');
+ qrCodeContainer.innerHTML = ''; // Clear any existing QR code
+ var qrCode = new QRCode(qrCodeContainer, {
+   text: email, // You can change this to any information you want to encode
+   width: 150,
+   height: 150,
+ });
+
+ document.getElementById('contact-modal').classList.add('show');
+}
+
+function closeContactModal() {
+ document.getElementById('contact-modal').classList.remove('show');
+}
+
+ // Attach click event for all contact buttons
+ document.addEventListener('DOMContentLoaded', () => {
+   const triggers = document.querySelectorAll('.contact-trigger');
+   triggers.forEach(btn => {
+     btn.addEventListener('click', () => {
+       const name = btn.dataset.name;
+       const email = btn.dataset.email;
+       const avatar = btn.dataset.avatar;
+       openContactModal(name, email, avatar);
+     });
+   });
+ });
+
+
+ //Notification
+ function toggleNotification(event) {
+   const dropdown = event.currentTarget;
+   const popup = dropdown.querySelector('.notification-popup');
+   const countBadge = dropdown.querySelector('.notification-count');
+
+   popup.classList.toggle('show');
+
+   if (popup.classList.contains('show')) {
+     // Hide count
+     if (countBadge) {
+       countBadge.style.display = 'none';
+     }
+
+     // Call backend to mark as read
+     fetch('/notifications/mark-as-read', {
+       method: 'POST',
+       headers: {
+         'X-Requested-With': 'XMLHttpRequest'
+       }
+     }).then(response => {
+       if (!response.ok) {
+         console.error("Failed to mark notifications as read");
+       }
+     });
+   }
+
+   event.stopPropagation();
+ }
+
+ // Hide popup on outside click
+ document.addEventListener('click', () => {
+   document.querySelectorAll('.notification-popup.show').forEach(p => p.classList.remove('show'));
+ });
+
+</script>
 </body>
 </html>

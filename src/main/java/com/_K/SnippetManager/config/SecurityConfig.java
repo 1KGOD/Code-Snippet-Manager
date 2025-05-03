@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
         http
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/home","/register","/login","/request-resetpassword","/resetsuccess","/resetpassword/**","/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/home","/register","/login","/request-resetpassword","/resetsuccess","/resetpassword/**","/home","/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/dashboard").hasRole("USER")
                         .anyRequest().authenticated()
@@ -68,7 +68,7 @@ public class SecurityConfig {
                 if(authorities.stream().anyMatch(e->e.getAuthority().equals("ROLE_ADMIN"))){
                     response.sendRedirect("/admin/dashboard");
                 }else if(authorities.stream().anyMatch(e->e.getAuthority().equals("ROLE_USER"))){
-                    response.sendRedirect("/user/dashboard");
+                    response.sendRedirect("/home");
                 }else{
                     response.sendRedirect("/login?error=unauthorized");
                 }

@@ -35,14 +35,21 @@ public class Snippet {
     private String code;
 
     @OneToMany(mappedBy = "snippet")
-    @JsonIgnore
     private List<Rating> ratings;
+
+    @OneToMany(mappedBy = "snippet")
+    private List<Notification> notifications;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updateAt;
 
     private Boolean isDeleted = false ;
+
+    private Boolean isPublished = false;
+
+
+
 
 
     public Snippet(SnippetForm snippetForm){
@@ -56,6 +63,14 @@ public class Snippet {
     }
 
     public Snippet(){}
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
 
 
     public Long getSnippetId() {
@@ -74,6 +89,21 @@ public class Snippet {
         this.code = code;
     }
 
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public Boolean getPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(Boolean published) {
+        isPublished = published;
+    }
 
     public String getTitle() {
         return title;

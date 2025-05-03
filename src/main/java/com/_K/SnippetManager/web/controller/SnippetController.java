@@ -168,4 +168,27 @@ public class SnippetController {
 
         return "redirect:/user/snippet/list";
     }
+
+
+    @RequestMapping(value = "/user/snippet/publish" , method = RequestMethod.POST)
+    public String snippetPublish(@RequestParam("snippetId") Long snippetId , @AuthenticationPrincipal UserDetails userDetails, RedirectAttributes redirectAttributes){
+        String email = userDetails.getUsername();
+        Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+
+        if(users.isPresent()){
+            User user = users.get();
+            Optional<Snippet> snippets = snippetDao.findBySnippetIdAndUserAndIsDeletedFalse(snippetId,user);
+            if(snippets.isPresent()){
+                Snippet snippet = snippets.get();
+                if(!Boolean.TRUE.equals(snippet.getPublished())){
+                    snippet.setPublished(true);
+                    snippet.setUpdateAt(LocalDateTime.now());
+                    snippetDao.save(snippet);
+                    redirectAttributes.addFlashAttribute("showSuccessModal",true);
+                }
+            }
+        }
+
+        return "redirect:/user/dashboard";
+    }
 }

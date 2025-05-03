@@ -32,6 +32,8 @@ public class SnippetForm {
 
     private Boolean isDeleted = false ;
 
+    private Boolean isPublished = false;
+
 
     public SnippetForm(Snippet snippet){
         this.setSnippetId(snippet.getSnippetId());
@@ -45,6 +47,21 @@ public class SnippetForm {
 
     public SnippetForm(){}
 
+    public Rating getRating() {
+        return rating;
+    }
+
+    public void setRating(Rating rating) {
+        this.rating = rating;
+    }
+
+    public Boolean getPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(Boolean published) {
+        isPublished = published;
+    }
 
     public Rating getFavorite() {
         return rating;

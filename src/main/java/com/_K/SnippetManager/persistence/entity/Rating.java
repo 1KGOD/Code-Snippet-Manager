@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "rating")
 @Getter
@@ -37,7 +35,7 @@ public class Rating {
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public void setUser(User user) {
@@ -45,13 +43,18 @@ public class Rating {
     }
 
     public Snippet getSnippet() {
-        return snippet;
+        return this.snippet;
     }
 
     public void setSnippet(Snippet snippet) {
         this.snippet = snippet;
     }
 
+    public int getScore() {
+        return score;
+    }
 
-
+    public void setScore(int score) {
+        this.score = score;
+    }
 }

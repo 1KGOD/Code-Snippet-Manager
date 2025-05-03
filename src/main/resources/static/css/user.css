@@ -655,3 +655,44 @@ h1 {
   transform: scale(1.2);
   transition: transform 0.2s ease;
 }
+
+
+.btn-outline-light:hover {
+    background-color: #00d4ff;
+    color: #000;
+}
+
+.btn-primary {
+    background-color: #00b4d8;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #009ec1;
+}
+
+/* Toast Styles */
+.copy-toast {
+    transition: all 0.5s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+    background-color: #00d4ff;  /* Modern Blue */
+    color: #fff;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.copy-toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    display: block;
+}
+
+
+

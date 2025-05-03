@@ -1,10 +1,833 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+body {
+  margin: 0;
+  background-color: #0e0e0e;
+  font-family: 'Segoe UI', sans-serif;
+  color: #f0f0f0;
+}
 
-</body>
-</html>
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #141414;
+  padding: 20px 40px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  position: relative;
+  z-index: 10;
+  margin: 20px 20px 0 20px; /* Top margin added */
+  border-radius: 12px;
+}
+
+
+.logo-icon {
+  font-size: 32px;
+  color: #00d4ff;
+  animation: rotateLogo 3s linear infinite;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00d4ff;
+  margin-left: 10px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  color: #00d4ff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+
+.navbar-right {
+  position: relative;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Bell Icon Styling */
+.bell-icon {
+  font-size: 20px;
+  color: #00d4ff;
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.bell-icon {
+  font-size: 24px;
+  color: white;
+}
+
+.notification-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.notification-popup {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: #1e1e2f;
+  color: white;
+  padding: 10px;
+  width: 250px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #00000099;
+  z-index: 1000;
+}
+
+.notification-popup.show {
+  display: block;
+}
+
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 5px;
+}
+
+.notification-item {
+  margin: 5px 0;
+}
+
+.notification-time {
+  font-size: 11px;
+  color: #ccc;
+}
+
+
+/* Profile Container */
+.profile-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+/* Profile Avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Username */
+.username {
+  margin-left: 10px;
+  font-size: 15px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Dropdown Menu (hidden by default) */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #1c1c1c;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.2);
+  padding: 10px 0;
+  min-width: 140px;
+  display: none;
+  z-index: 99;
+}
+
+/* Show dropdown when active */
+.profile-dropdown.active .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px 16px;
+  color: #00d4ff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.dropdown-menu a:hover {
+  background-color: #2a2a2a;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  background-color: #0f0f0f;
+  padding: 100px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* This ensures left and right alignment */
+  overflow: hidden;
+}
+
+/* Hero Content (Left Side) */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 50%; /* Hero content aligned to the left */
+}
+
+/* Hero Content Title */
+.hero-content h1 {
+  font-size: 52px;
+  font-weight: 800;
+  background: #00f7ff;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeInUp 1s ease forwards;
+}
+
+/* Hero Content Description */
+.hero-content p {
+  font-size: 22px;
+  color: #e1e1e1; /* Bright Blue, or choose any of the other options */
+  animation: fadeInUp 1.3s ease forwards;
+}
+
+
+
+/* Modern Floating Card (Right Side) */
+.floating-card.modern-glass {
+  position: absolute;
+  top: 30%;
+  left: 65%; /* Move it towards the right side */
+  transform: translateY(-50%) translateX(10%); /* Center vertically and shift a bit */
+  width: 320px;
+  background: rgba(18, 18, 18, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
+  padding: 1.8rem;
+  z-index: 10;
+  animation: floatY 6s ease-in-out infinite;
+  color: #fff;
+}
+
+/* Card Header with Icon */
+.card-header {
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card-header i {
+  color: #00d4ff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+/* Card Description */
+.card-desc {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.2rem;
+}
+
+/* CTA Button */
+.card-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #00bcd4, #00f7ff);
+  border-radius: 12px;
+  color: #000;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-btn i {
+  margin-right: 8px;
+}
+
+/* Hover Effect for Button */
+.card-btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #00f7ff, #00bcd4);
+  box-shadow: 0 6px 18px rgba(0, 255, 255, 0.3);
+}
+
+/* Section Title Color */
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00d4ff; /* Neon-Turquoise */
+  margin-bottom: 15px;
+}
+
+/* Section Title Styling */
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00d4ff; /* Neon-Turquoise */
+  margin-bottom: 15px;
+}
+
+/* Search Form Styling */
+.search-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1c1c1c; /* Dark background for search form */
+  border-radius: 25px;
+  padding: 8px 15px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+}
+
+/* Search Input Styling */
+.search-form input {
+  background-color: #141414;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+  width: 85%;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.search-form input:focus {
+  outline: none;
+  border-color: #00d4ff; /* Neon-Turquoise border on focus */
+  box-shadow: 0 0 10px #00d4ff; /* Subtle glow */
+}
+
+/* Search Button Styling */
+.search-form button {
+  background-color: #00d4ff;
+  border: none;
+  border-radius: 20px;
+  padding: 12px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 18px;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.search-form button:hover {
+  background-color: #00b4cc;
+  transform: scale(1.05); /* Slight scale-up on hover */
+}
+
+.search-form button:focus {
+  outline: none;
+}
+
+/* Icon Styling */
+.search-form button i {
+  font-size: 18px;
+}
+
+
+
+/* Animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatY {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* SVG Background Fix */
+.hero-illustrator-before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-svg {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.sliding-banner {
+  overflow: hidden;
+  background: linear-gradient(90deg, #0f0f0f, #161616);
+  border-top: 1px solid #00d4ff33;
+  border-bottom: 1px solid #00d4ff33;
+  padding: 12px 0;
+}
+
+.sliding-text {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: slideText 30s linear infinite;
+}
+
+.sliding-text span {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  gap: 24px;
+  padding-right: 64px;
+  background: linear-gradient(90deg, #00d4ff, #bf00ff, #00ff95);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 6px #00d4ff33;
+}
+
+.sliding-text i {
+  font-size: 1.1rem;
+  color: #00f2ff;
+  margin-right: 6px;
+}
+
+@keyframes slideText {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+/* Snippet Cards */
+.section-title {
+  font-size: 24px;
+  color: #00d4ff;
+  text-align: center;
+  margin-top: 60px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  padding: 40px 20px;
+}
+
+
+/* Card */
+.modern-snippet-card {
+  background: #1e1e1e;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 24px auto;
+  color: #eaeaea;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  max-width: 700px;
+  transition: 0.3s ease;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #00b4d8;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.snippet-date {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.language-tag {
+  background: #00b4d8;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 20px;
+  color: white;
+}
+
+.code-block {
+  background: #121212;
+  padding: 16px;
+  border-radius: 14px;
+  margin: 16px 0;
+  font-family: 'Fira Code', monospace;
+  overflow-x: auto;
+  border: 1px solid #2a2a2a;
+}
+
+.snippet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 0;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.star-btn, .contact-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.star-btn {
+  color: #FFD166;
+}
+
+.star-btn:hover {
+  background: #FFD16622;
+  box-shadow: 0 0 6px #FFD16688;
+}
+
+.contact-btn {
+  color: #00B4D8;
+}
+
+.contact-btn:hover {
+  background: #00B4D822;
+  box-shadow: 0 0 6px #00B4D8aa;
+  color: #fff;
+}
+
+
+
+
+
+/* Comment Section */
+.comment-section {
+  padding-top: 14px;
+}
+
+.comment-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.comment-input {
+  flex: 1;
+  background: #121212;
+  border: 1px solid #2c2c2c;
+  color: #eee;
+  padding: 10px 14px;
+  border-radius: 12px;
+  outline: none;
+}
+
+.message-icon {
+  background: #00b4d8;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.message-icon:hover {
+  background: #00a0c0;
+}
+
+.comments-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-bubble {
+  background: #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+
+
+ /* Contact Modal Styling */
+  .contact-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .contact-modal.show {
+    display: flex;
+  }
+
+ /* Contact Modal Styling */
+   .contact-modal {
+     display: none;
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background-color: rgba(0, 0, 0, 0.6);
+     z-index: 999;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.3s ease-in-out;
+   }
+
+   .contact-modal.show {
+     display: flex;
+   }
+
+ /* Contact Modal Styling */
+  .contact-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .contact-modal.show {
+    display: flex;
+  }
+
+/* Contact Modal Styling */
+  .contact-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .contact-modal.show {
+    display: flex;
+  }
+
+  /* Modal Content Styling */
+  .modal-content {
+    background: #1a1a1a;
+    color: white;
+    border-radius: 15px;  /* Reduced border-radius for a smaller card */
+    padding: 20px;
+    max-width: 380px; /* Reduced max-width */
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+    transform: scale(0.9);
+    opacity: 0;
+    animation: fadeInUp 0.6s forwards;
+    background-image: url('https://www.transparenttextures.com/patterns/axiom-pattern.png');
+    background-size: 20px 20px; /* Adds subtle texture */
+    background-repeat: repeat;
+    border: 2px solid #333; /* Adding border */
+    transition: border-color 0.3s ease; /* Smooth border color transition */
+  }
+
+  /* Modal Animation */
+  @keyframes fadeInUp {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Avatar Styling */
+  .modal-avatar {
+    width: 80px; /* Smaller size */
+    height: 80px; /* Smaller size */
+    border-radius: 50%;
+    margin-bottom: 15px;  /* Reduced margin */
+    border: 3px solid #00d4ff; /* Modern border around avatar */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .modal-avatar:hover {
+    transform: scale(1.1);
+  }
+
+  /* Name Styling */
+  h2#modal-name {
+    font-size: 20px; /* Smaller font */
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #00d4ff;
+    transition: all 0.3s ease;
+  }
+
+  h2#modal-name:hover {
+    color: #fff;
+  }
+
+  /* Email Styling */
+  p#modal-email {
+    font-size: 14px;  /* Smaller font */
+    color: #ccc;
+    margin-bottom: 15px;  /* Reduced margin */
+    transition: all 0.3s ease;
+  }
+
+  p#modal-email:hover {
+    color: #fff;
+  }
+
+  /* QR Code Container Styling */
+  #qr-code-container {
+    background: #333;
+    padding: 15px;  /* Reduced padding */
+    border-radius: 12px;
+    margin-top: 15px;  /* Reduced margin */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+    display: inline-block; /* Keeps QR code within box */
+  }
+
+  #qr-code-container img {
+    width: 100%;
+    max-width: 120px; /* Smaller size */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 3px solid #00d4ff; /* Adding border to QR code */
+  }
+
+  /* Hover Effect on QR Code */
+  #qr-code-container:hover {
+    transform: scale(1);
+  }
+
+  /* Close Button Styling */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    color: white;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .close-btn:hover {
+    color: #00d4ff;
+    transform: scale(1.1);
+  }
+
+  /* Border Effect without Rotation */
+  .modal-content:hover {
+    border-color: #00d4ff;  /* Smooth color transition for the border */
+  }
+
+.snippet-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 12px 0 8px;
+  color: #fff;
+}
+
+
+
+
+

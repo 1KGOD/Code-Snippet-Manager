@@ -35,9 +35,8 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
 
     Optional<Snippet> findBySnippetIdAndUserAndIsDeletedFalse(Long snippetId, User user);
 
+    // Find all snippets where isDeleted is false and isPublished is true
+    List<Snippet> findByIsDeletedFalseAndIsPublishedTrue();
 
-
-
-
-    long countByIsDeletedFalse();
+    Optional<Snippet> findBySnippetIdAndIsDeletedFalse(Long snippetId);
 }
