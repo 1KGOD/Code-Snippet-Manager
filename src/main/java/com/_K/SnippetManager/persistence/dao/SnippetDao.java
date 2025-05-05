@@ -39,4 +39,18 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
     List<Snippet> findByIsDeletedFalseAndIsPublishedTrue();
 
     Optional<Snippet> findBySnippetIdAndIsDeletedFalse(Long snippetId);
+
+    @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false AND s.isPublished = true ORDER BY (SELECT COUNT(r) FROM Rating r WHERE r.snippet = s) DESC")
+    List<Snippet> findTop3RatedSnippetsByCount();
+
+    @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false AND s.isPublished = true AND " +
+            "(LOWER(s.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+            "(:language IS NULL OR s.language.name = :language)")
+    Page<Snippet> searchPublishedAndNotDeleted(@Param("search") String search,
+                                               @Param("language") String language,
+                                               Pageable pageable);
+
+    long countByUser_UserIDAndIsDeletedFalseAndIsPublishedTrue(Long userId);
+
 }

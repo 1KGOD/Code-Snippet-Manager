@@ -48,6 +48,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updateAt;
@@ -100,6 +103,14 @@ public class User {
 
     public void setPasswordRestToken(List<PasswordRestToken> passwordRestToken) {
         this.passwordRestToken = passwordRestToken;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public List<Rating> getRating() {

@@ -40,6 +40,10 @@ public class Snippet {
     @OneToMany(mappedBy = "snippet")
     private List<Notification> notifications;
 
+
+    @OneToMany(mappedBy = "snippet")
+    private List<Comment> comments;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updateAt;
@@ -72,6 +76,13 @@ public class Snippet {
         this.notifications = notifications;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public Long getSnippetId() {
         return snippetId;

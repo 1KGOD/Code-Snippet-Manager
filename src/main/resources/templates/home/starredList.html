@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Snippet Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <span class="logo-icon">&lt;/&gt;</span>
+        <span class="logo-text">CodeSnippetManager</span>
+    </div>
+
+    <div class="navbar-center">
+        <a th:href="@{/home}" class="nav-link">Home</a>
+        <a th:href="@{/snippets}" class="nav-link">Snippets</a>
+        <a th:href="@{/favorite}" class="nav-link">Favorites</a>
+    </div>
+
+    <div class="navbar-right">
+        <div class="navbar-actions">
+
+            <!-- Notification Bell Icon with Badge -->
+            <div class="notification-icon" onclick="toggleNotificationPopup()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" th:text="${notifications.size()}">3</span>
+            </div>
+
+            <!-- Notification Popup -->
+            <div id="notificationPopup" class="notification-popup hidden">
+                <div class="notification-title">Notifications</div>
+
+                <div class="notification-items-wrapper">
+                    <div th:if="${notifications != null and notifications.size() > 0}">
+                        <div th:each="notif : ${notifications}" class="notification-item">
+                            <span th:text="${notif.message}">Someone starred your snippet!</span>
+                            <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'yyyy-MM-dd HH:mm')}">Now</div>
+                        </div>
+                    </div>
+                    <div th:if="${notifications == null or notifications.isEmpty()}">
+                        <div class="notification-item">No new notifications</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" onclick="toggleDropdown(this)">
+                <img  th:if="${user.profileImage != null}" th:src="@{${user.profileImage}}" alt="Profile" class="avatar" />
+                <img  th:if="${user.profileImage == null}" th:src="@{/img/default-profile.jpg}" alt="Profile" class="avatar" />
+                <span class="username" th:text="${user.name}">Alex Carter</span>
+                <div class="dropdown-menu">
+                    <a th:href="@{/user/dashboard}">Profile</a>
+                    <a th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- Snippet Cards -->
+<section class="popular-snippets">
+    <h2 class="section-title" style="color: #00d4ff;">
+        <i class="fas fa-fire"></i> <!-- Fire Icon -->
+        Favorite Snippets
+    </h2>
+
+
+    <div class="filter-search-bar">
+        <!-- Search Box -->
+        <form method="GET" action="/favorite" class="search-box d-flex align-items-center gap-2">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" class="form-control custom-input" name="keyword" placeholder="Search by Title or Username" th:value="${keyword}" />
+            <button type="submit" class="btn custom-btn d-flex align-items-center">
+                <i class="bi bi-search me-2"></i> Search
+            </button>
+        </form>
+
+        <!-- Language Filter -->
+        <form method="GET" action="/favorite" class="language-box d-flex align-items-center gap-2">
+            <i class="bi bi-filter filter-icon"></i>
+            <select class="form-select custom-dropdown" name="language" onchange="this.form.submit()">
+                <option value="">Filter by Language</option>
+                <th:block th:each="lang : ${languages}">
+                    <option th:value="${lang.name}" th:selected="${lang.name == language}" th:text="${lang.name}"></option>
+                </th:block>
+            </select>
+        </form>
+    </div>
+
+
+
+
+
+
+
+    <div class="cards-container">
+        <!-- Snippet Card -->
+        <div th:each="snippet : ${starredSnippets}" class="modern-snippet-card">
+            <!-- Header -->
+            <div class="card-header">
+                <div class="user-info">
+                    <div th:if="${snippet.user != null}">
+                        <img th:if="${snippet.user.profileImage != null}"
+                             th:src="@{${snippet.user.profileImage}}"
+                             alt="User" class="avatar"/>
+
+                        <img th:if="${snippet.user.profileImage == null}"
+                             th:src="@{/img/default-profile.jpg}"
+                             alt="User" class="avatar"/>
+                    </div>
+
+                    <div th:if="${snippet.user == null}">
+                        <img th:src="@{/img/default-profile.jpg}"
+                             alt="User" class="avatar"/>
+                    </div>
+
+
+                    <div>
+                        <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
+                        <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">Apr 30, 2025</div>
+                    </div>
+                </div>
+                <span class="language-tag" th:text="${snippet.language.name}">JavaScript</span>
+            </div>
+            <!-- Title -->
+            <div class="snippet-title" th:text="${snippet.title}"> Custom Logger Utility for Debugging</div>
+            <!-- Code Block -->
+            <pre class="code-block"><code th:class="'language-' + ${snippet.language.name}" th:text="${#strings.abbreviate(snippet.code, 80)}">console.log("Hello, modern UI!");</code></pre>
+            <div class="snippet-footer">
+                <form th:action="@{rating/star(snippetId=${snippet.snippetId})}" method="post" style="display: inline;">
+                    <input type="hidden" name="snippetId" th:value="${snippet.snippetId}" />
+                    <button type="submit" class="star-btn">
+                        <i class="fas fa-star"></i> <span th:text="${snippet.getRatings().size()}">0</span>
+                    </button>
+                </form>
+                <button class="contact-btn contact-trigger"
+                        th:attr="data-name=${snippet.user.name},
+                 data-email=${snippet.user.email},
+                 data-avatar=${snippet.user.profileImage}">
+                    <i class="fas fa-envelope"></i> Contact
+                </button>
+            </div>
+            <!-- Comment Section -->
+            <div class="comment-section">
+                <form th:action="@{/comment/add(snippetId=${snippet.snippetId})}" method="post" class="comment-input-row">
+                    <input type="hidden" name="snippetId" th:value="${snippet.snippetId}" />
+                    <input type="text" name="content" class="comment-input" placeholder="Add a comment..." required />
+                    <button type="submit" class="message-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+
+                <div class="comments-list">
+                    <div th:each="c : ${snippet.comments}" class="comment-bubble">
+                        <strong th:text="${c.user.name}">Username</strong>: <span th:text="${c.content}">Comment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="contact-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeContactModal()">×</button>
+            <img id="modal-avatar" class="modal-avatar" />
+            <h2 id="modal-name"></h2>
+            <p id="modal-email"></p>
+
+            <!-- QR Code Container -->
+            <div id="qr-code-container"></div> <!-- Dynamic QR code will be inserted here -->
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<script th:inline="javascript">
+    function toggleDropdown(element) {
+    // Close all other dropdowns
+    document.querySelectorAll('.profile-dropdown').forEach(drop => {
+      if (drop !== element) {
+        drop.classList.remove('active');
+      }
+    });
+
+    // Toggle this one
+    element.classList.toggle('active');
+  }
+
+  // Close dropdown if clicked outside
+  document.addEventListener('click', function (event) {
+    const isDropdown = event.target.closest('.profile-dropdown');
+    if (!isDropdown) {
+      document.querySelectorAll('.profile-dropdown').forEach(drop => drop.classList.remove('active'));
+    }
+  });
+
+  function openContactModal(name, email, avatar) {
+   document.getElementById('modal-name').textContent = name;
+   document.getElementById('modal-email').textContent = email;
+   document.getElementById('modal-avatar').src = avatar;
+
+   // Generate QR code dynamically
+   var qrCodeContainer = document.getElementById('qr-code-container');
+   qrCodeContainer.innerHTML = ''; // Clear any existing QR code
+   var qrCode = new QRCode(qrCodeContainer, {
+     text: email, // You can change this to any information you want to encode
+     width: 150,
+     height: 150,
+   });
+
+   document.getElementById('contact-modal').classList.add('show');
+  }
+
+  function closeContactModal() {
+   document.getElementById('contact-modal').classList.remove('show');
+  }
+
+   // Attach click event for all contact buttons
+   document.addEventListener('DOMContentLoaded', () => {
+     const triggers = document.querySelectorAll('.contact-trigger');
+     triggers.forEach(btn => {
+       btn.addEventListener('click', () => {
+         const name = btn.dataset.name;
+         const email = btn.dataset.email;
+         const avatar = btn.dataset.avatar;
+         openContactModal(name, email, avatar);
+       });
+     });
+   });
+
+
+   function toggleNotificationPopup() {
+      const popup = document.getElementById('notificationPopup');
+      const badge = document.querySelector('.notification-badge');
+      popup.classList.toggle('show');
+      // Hide badge when notification is opened
+    if (popup.classList.contains('show')) {
+      badge.style.display = 'none';
+    }
+    }
+
+    // Optional: Click outside to close
+    document.addEventListener('click', function (event) {
+      const popup = document.getElementById('notificationPopup');
+      const bell = document.querySelector('.notification-icon');
+      if (!popup.contains(event.target) && !bell.contains(event.target)) {
+        popup.classList.remove('show');
+      }
+    });
+
+</script>
+</body>
+</html>

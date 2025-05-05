@@ -656,6 +656,10 @@ h1 {
   transition: transform 0.2s ease;
 }
 
+a{
+ text-decoration : none;
+ color : inherit;
+}
 
 .btn-outline-light:hover {
     background-color: #00d4ff;

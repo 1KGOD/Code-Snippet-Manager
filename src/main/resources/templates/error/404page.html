@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Snippet Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <span class="logo-icon">&lt;/&gt;</span>
+        <span class="logo-text">CodeSnippetManager</span>
+    </div>
+
+    <div class="navbar-center">
+        <a href="#" class="nav-link">Home</a>
+        <a href="#" class="nav-link">Snippets</a>
+        <a href="#" class="nav-link">Favorites</a>
+    </div>
+
+    <div class="navbar-right">
+        <div class="navbar-actions">
+
+            <!-- Notification Bell Icon with Badge -->
+            <div class="notification-icon" onclick="toggleNotificationPopup()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" th:text="${notifications.size()}">3</span>
+            </div>
+
+            <!-- Notification Popup -->
+            <div id="notificationPopup" class="notification-popup hidden">
+                <div class="notification-title">Notifications</div>
+
+                <div class="notification-items-wrapper">
+                    <div th:if="${notifications != null and notifications.size() > 0}">
+                        <div th:each="notif : ${notifications}" class="notification-item">
+                            <span th:text="${notif.message}">Someone starred your snippet!</span>
+                            <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'yyyy-MM-dd HH:mm')}">Now</div>
+                        </div>
+                    </div>
+                    <div th:if="${notifications == null or notifications.isEmpty()}">
+                        <div class="notification-item">No new notifications</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" onclick="toggleDropdown(this)">
+                <img  th:if="${user.profileImage != null}" th:src="@{${user.profileImage}}" alt="Profile" class="avatar" />
+                <img  th:if="${user.profileImage == null}" th:src="@{/img/default-profile.jpg}" alt="Profile" class="avatar" />
+                <span class="username" th:text="${user.name}">Alex Carter</span>
+                <div class="dropdown-menu">
+                    <a th:href="@{/user/dashboard}">Profile</a>
+                    <a th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="error-container">
+    <div class="error-code">404</div>
+    <div class="error-message">Oops! Page Not Found</div>
+    <div class="error-actions">
+        <a th:href="@{/home}" class="btn">Go Back Home</a>
+    </div>
+</div>
+
+
+
+
+
+<script th:inline="javascript">
+    function toggleDropdown(element) {
+    // Close all other dropdowns
+    document.querySelectorAll('.profile-dropdown').forEach(drop => {
+      if (drop !== element) {
+        drop.classList.remove('active');
+      }
+    });
+
+    // Toggle this one
+    element.classList.toggle('active');
+  }
+
+  // Close dropdown if clicked outside
+  document.addEventListener('click', function (event) {
+    const isDropdown = event.target.closest('.profile-dropdown');
+    if (!isDropdown) {
+      document.querySelectorAll('.profile-dropdown').forEach(drop => drop.classList.remove('active'));
+    }
+  });
+
+  function openContactModal(name, email, avatar) {
+   document.getElementById('modal-name').textContent = name;
+   document.getElementById('modal-email').textContent = email;
+   document.getElementById('modal-avatar').src = avatar;
+
+   // Generate QR code dynamically
+   var qrCodeContainer = document.getElementById('qr-code-container');
+   qrCodeContainer.innerHTML = ''; // Clear any existing QR code
+   var qrCode = new QRCode(qrCodeContainer, {
+     text: email, // You can change this to any information you want to encode
+     width: 150,
+     height: 150,
+   });
+
+   document.getElementById('contact-modal').classList.add('show');
+  }
+
+  function closeContactModal() {
+   document.getElementById('contact-modal').classList.remove('show');
+  }
+
+   // Attach click event for all contact buttons
+   document.addEventListener('DOMContentLoaded', () => {
+     const triggers = document.querySelectorAll('.contact-trigger');
+     triggers.forEach(btn => {
+       btn.addEventListener('click', () => {
+         const name = btn.dataset.name;
+         const email = btn.dataset.email;
+         const avatar = btn.dataset.avatar;
+         openContactModal(name, email, avatar);
+       });
+     });
+   });
+
+
+   function toggleNotificationPopup() {
+      const popup = document.getElementById('notificationPopup');
+      const badge = document.querySelector('.notification-badge');
+      popup.classList.toggle('show');
+      // Hide badge when notification is opened
+    if (popup.classList.contains('show')) {
+      badge.style.display = 'none';
+    }
+    }
+
+    // Optional: Click outside to close
+    document.addEventListener('click', function (event) {
+      const popup = document.getElementById('notificationPopup');
+      const bell = document.querySelector('.notification-icon');
+      if (!popup.contains(event.target) && !bell.contains(event.target)) {
+        popup.classList.remove('show');
+      }
+    });
+
+</script>
+</body>
+</html>

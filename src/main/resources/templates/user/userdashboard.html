@@ -20,7 +20,7 @@
 <div class="navbar d-flex align-items-center px-4 py-3 mb-4">
     <div class="d-flex align-items-center">
         <span class="logo-icon">&lt;/&gt;</span>
-        <span class="logo-text ms-2">CodeSnippetManager</span>
+        <span class="logo-text ms-2"><a th:href="@{/home}">CodeSnippetManager</a></span>
     </div>
     <div class="ms-auto d-flex align-items-center">
         <img th:src="${user.profileImage != null} ? @{${user.profileImage}} : @{/img/default-profile.jpg}" alt="Profile" class="profile-img rounded-circle">
@@ -59,7 +59,7 @@
             </div>
             <div class="stat-card">
                 <i class="icon bi bi-star-fill"></i>
-                <div class="stat-value">0</div>
+                <div class="stat-value" th:text="${publishCount}">0</div>
                 <div class="stat-label">Publish Snippets</div>
             </div>
             <div class="stat-card">

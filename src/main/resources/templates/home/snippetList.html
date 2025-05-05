@@ -68,112 +68,46 @@
   </div>
 </nav>
 
-<!-- Hero Section with modern Illustrator Design -->
-<section class="hero-section">
 
-  <!-- Hero Content (Left Side) -->
-  <div class="hero-content">
-    <h1>Organize. Share. Master Your Code.</h1>
-    <p>Create, favorite, and manage code snippets like a pro.</p>
-  </div>
-
-  <!-- Floating Card on the Right Side -->
-  <div class="floating-card modern-glass">
-    <div class="card-header">
-      <i class="fas fa-code"></i> <!-- Code Icon -->
-    </div>
-    <p class="card-desc">Showcase your best code snippets in a beautiful way and stay organized.</p>
-    <a th:href="@{/register}" class="card-btn">
-      <i class="fas fa-rocket"></i> Start Now <!-- Rocket Icon with Start Now Text -->
-    </a>
-  </div>
-
-  <!-- Trend Illustrator Design (Full Width + Animation) -->
-  <div class="hero-illustrator-before">
-    <!-- Modern Animated SVG Background with Smooth Reverse -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" class="hero-svg">
-      <defs>
-        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <!-- Modern Gradient (Purple to Neon Blue) -->
-          <stop offset="0%" style="stop-color:#bf00ff;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.9" />
-        </linearGradient>
-      </defs>
-      <path fill="url(#gradient1)">
-        <animate attributeName="d"
-                 dur="12s"
-                 repeatCount="indefinite"
-                 fill="freeze"
-                 calcMode="spline"
-                 keyTimes="0; 0.5; 1"
-                 keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
-                 values="
-          M0,250 Q400,400 800,250 Q1200,100 1600,250 L1600,500 L0,500 Z;
-          M0,300 Q400,500 800,300 Q1200,50 1600,300 L1600,500 L0,500 Z;
-          M0,250 Q400,400 800,250 Q1200,100 1600,250 L1600,500 L0,500 Z"/>
-      </path>
-    </svg>
-  </div>
-
-</section>
-
-
-
-<!-- 🔥 Modern Sliding Text Banner -->
-<div class="sliding-banner">
-  <div class="sliding-text">
-    <span>
-      <i class="fas fa-code"></i> Code Snippet Manager
-      <i class="fas fa-bolt"></i> Build Fast
-      <i class="fas fa-cloud-upload-alt"></i> Share Code
-      <i class="fas fa-users"></i> Collaborate
-      <i class="fas fa-layer-group"></i> Organize
-      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
-      &nbsp;&nbsp;&nbsp;
-    </span>
-    <!-- Duplicate span for seamless looping -->
-    <span>
-      <i class="fas fa-code"></i> Code Snippet Manager
-      <i class="fas fa-bolt"></i> Build Fast
-      <i class="fas fa-cloud-upload-alt"></i> Share Code
-      <i class="fas fa-users"></i> Collaborate
-      <i class="fas fa-layer-group"></i> Organize
-      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
-      &nbsp;&nbsp;&nbsp;
-    </span>
-    <span>
-      <i class="fas fa-code"></i> Code Snippet Manager
-      <i class="fas fa-bolt"></i> Build Fast
-      <i class="fas fa-cloud-upload-alt"></i> Share Code
-      <i class="fas fa-users"></i> Collaborate
-      <i class="fas fa-layer-group"></i> Organize
-      <i class="fas fa-rocket"></i> 🚀 Supercharge Your Dev Flow
-      &nbsp;&nbsp;&nbsp;
-    </span>
-  </div>
-</div>
-
-<!-- Snippet Cards -->
 <!-- Snippet Cards -->
 <section class="popular-snippets">
   <h2 class="section-title" style="color: #00d4ff;">
     <i class="fas fa-fire"></i> <!-- Fire Icon -->
-    Most Popular Snippets
+    Published Snippets
   </h2>
 
 
   <!-- Search Bar Below Title -->
-<!--  <form class="search-form" style="margin-bottom: 20px;">-->
-<!--    <input type="text" placeholder="Search snippets..." />-->
-<!--    <button type="submit">-->
-<!--      <i class="fas fa-search"></i> &lt;!&ndash; Search Icon &ndash;&gt;-->
-<!--    </button>-->
-<!--  </form>-->
+  <!--  <form class="search-form" style="margin-bottom: 20px;">-->
+  <!--    <input type="text" placeholder="Search snippets..." />-->
+  <!--    <button type="submit">-->
+  <!--      <i class="fas fa-search"></i> &lt;!&ndash; Search Icon &ndash;&gt;-->
+  <!--    </button>-->
+  <!--  </form>-->
 
+  <div class="filter-search-bar">
+    <!-- Search Form -->
+    <form method="get" th:action="@{/snippets}" class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" name="search" th:value="${search}" placeholder="Search snippets..." />
+    </form>
+
+    <!-- Language Filter Form -->
+    <form method="get" th:action="@{/snippets}" class="language-box">
+      <i class="bi bi-filter filter-icon"></i>
+      <select name="language" onchange="this.form.submit()">
+        <option value="">All Languages</option>
+        <option th:each="lang : ${languages}"
+                th:value="${lang.name}"
+                th:text="${lang.name}"
+                th:selected="${lang.name == language}"></option>
+      </select>
+    </form>
+  </div>
 
   <div class="cards-container">
     <!-- Snippet Card -->
-    <div th:each="snippet : ${snippets}" class="modern-snippet-card">
+    <div th:each="snippet : ${snippetPage.content}" class="modern-snippet-card">
       <!-- Header -->
       <div class="card-header">
         <div class="user-info">
