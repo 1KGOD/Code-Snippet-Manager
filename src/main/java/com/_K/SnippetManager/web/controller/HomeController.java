@@ -2,7 +2,9 @@ package com._K.SnippetManager.web.controller;
 
 import com._K.SnippetManager.persistence.dao.*;
 import com._K.SnippetManager.persistence.entity.*;
+import com._K.SnippetManager.service.SnippetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +20,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -46,27 +47,35 @@ public class HomeController {
     @Autowired
     private LanguageDao languageDao;
 
-    @RequestMapping(value = "/home" , method = RequestMethod.GET)
-    public String home(@AuthenticationPrincipal UserDetails userDetails, Model model){
-        String email = userDetails.getUsername();
-        Optional<com._K.SnippetManager.persistence.entity.User> users = userDao.findByEmailAndIsDeletedFalse(email);
+    @Autowired
+    private SnippetService snippetService;
 
-        if(users.isPresent()){
-            User user = users.get();
-            List<Snippet> snippets = snippetDao.findTop3RatedSnippetsByCount();
-            List<Notification> notifications = notificationDao.findByUserAndIsReadFalse(user);
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public String home(@AuthenticationPrincipal UserDetails userDetails, Model model) {
 
-            if(notifications == null){
-                notifications =new ArrayList<>();
+        List<Notification> notifications = new ArrayList<>();
+        List<Snippet> snippets = snippetDao.findTop3RatedSnippetsByCount();
+        List<Snippet> top3 = snippets.size() > 3 ? snippets.subList(0, 3) : snippets;
+        List<Comment> comments = new ArrayList<>();
+
+        // If user is authenticated, load their data
+        if (userDetails != null) {
+            Optional<User> userOptional = userDao.findByEmailAndIsDeletedFalse(userDetails.getUsername());
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                model.addAttribute("user", user);
+                notifications = notificationDao.findByUserAndIsReadFalse(user);
+                if (!snippets.isEmpty()) {
+                    comments = commentDao.findBySnippetOrderByCreatedAtDesc(snippets.get(0));
+                }
             }
-
-            List<Comment> comments = commentDao.findBySnippetOrderByCreatedAtDesc(snippets.get(0));
-
-            model.addAttribute("notifications", notifications);
-            model.addAttribute("user", user);
-            model.addAttribute("snippets",snippets);
-            model.addAttribute("comments", comments);
         }
+
+         // Always has a value
+        model.addAttribute("notifications", notifications);
+        model.addAttribute("snippets", top3);
+        model.addAttribute("comments", comments);
+
         return "home/home";
     }
 
@@ -139,7 +148,6 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/snippets" , method = RequestMethod.GET)
-
     public String listSnippets(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "6") int size,
                                @RequestParam(required = false) String search,
@@ -166,7 +174,7 @@ public class HomeController {
                 comments = commentDao.findBySnippetOrderByCreatedAtDesc(snippetPage.getContent().get(0));
             }
             model.addAttribute("notifications", notifications);
-            model.addAttribute("snippetPage", snippetPage);
+            model.addAttribute("snippetPage", snippetPage.getContent());
             model.addAttribute("search", search);
             model.addAttribute("languages", languageDao.findAll());
         }
@@ -191,23 +199,20 @@ public class HomeController {
             boolean hasKeyword = keyword != null && !keyword.isEmpty();
             boolean hasLanguage = languageName != null && !languageName.isEmpty();
 
-            // Fetch the Language object from the database if language is provided
             Optional<Language> languageOpt = languageDao.findByName(languageName);
 
             List<Rating> ratings1 = new ArrayList<>();
 
-            if (hasKeyword) {
-                // Fetch all ratings for user
-                List<Rating> allRatings = ratingDao.findByUserAndPublishedSnippet(user);
+            List<Rating> allRatings = ratingDao.findByUserAndPublishedSnippet(user);
 
-                // Filter manually based on title/username + optional language
+            if (hasKeyword || hasLanguage) {
                 ratings1 = allRatings.stream()
                         .filter(rating -> {
                             Snippet snippet = rating.getSnippet();
                             if (snippet == null || snippet.getUser() == null) return false;
 
-                            boolean matchesTitle = snippet.getTitle().toLowerCase().contains(keyword.toLowerCase());
-                            boolean matchesUsername = snippet.getUser().getName().toLowerCase().contains(keyword.toLowerCase());
+                            boolean matchesTitle = !hasKeyword || snippet.getTitle().toLowerCase().contains(keyword.toLowerCase());
+                            boolean matchesUsername = !hasKeyword || snippet.getUser().getName().toLowerCase().contains(keyword.toLowerCase());
 
                             boolean matchesLanguage = true;
                             if (hasLanguage && languageOpt.isPresent()) {
@@ -219,15 +224,13 @@ public class HomeController {
                         })
                         .collect(Collectors.toList());
             } else {
-                // No keyword = show all
                 ratings1 = ratingDao.findByUserAndPublishedSnippetOrderByCreatedAtDesc(user);
             }
-
 
             // Process starred snippets
             List<Snippet> starredSnippets = ratings1.stream()
                     .map(Rating::getSnippet)
-                    .filter(s -> s != null && s.getUser() != null) // Ensure Snippet and User are not null
+                    .filter(s -> s != null && s.getUser() != null)
                     .collect(Collectors.toList());
 
             // Notifications
@@ -236,13 +239,13 @@ public class HomeController {
                 notifications = new ArrayList<>();
             }
 
-            // Comments (assuming you need to fetch comments for the first snippet)
+            // Comments
             List<Comment> comments = new ArrayList<>();
             if (!starredSnippets.isEmpty()) {
                 comments = commentDao.findBySnippetOrderByCreatedAtDesc(starredSnippets.get(0));
             }
 
-            // Adding attributes to the model
+            // Add attributes to model
             model.addAttribute("starredSnippets", starredSnippets);
             model.addAttribute("keyword", keyword);
             model.addAttribute("language", languageName);
@@ -252,6 +255,7 @@ public class HomeController {
         }
         return "home/starredList";
     }
+
 
     @RequestMapping(value = "/{path:.+}", method = RequestMethod.GET)
     public String handleUnknownRoutes(@AuthenticationPrincipal UserDetails userDetails , Model model) {
@@ -270,6 +274,22 @@ public class HomeController {
         return "error/404page"; // Corresponds to error.html in your templates
     }
 
+    @RequestMapping(value = "/myLibrary" , method = RequestMethod.GET)
+    public String myLibrary(@AuthenticationPrincipal UserDetails userDetails , Model model){
+        String email = userDetails.getUsername();
+        Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+        if(users.isPresent()){
+            User user = users.get();
+            List<Notification> notifications = notificationDao.findByUserAndIsReadFalse(user);
+            List<Snippet> publishedSnippets = snippetService.publishedSnippet(user);
+            List<Snippet> privatedSnippets =  snippetService.privatedSnippet(user);
+            model.addAttribute("user",user);
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("publishedSnippets",publishedSnippets);
+            model.addAttribute("privatedSnippets",privatedSnippets);
+        }
+        return "home/MyLibrary";
+    }
 
 
 }

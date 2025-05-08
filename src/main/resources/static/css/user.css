@@ -661,10 +661,54 @@ a{
  color : inherit;
 }
 
+.badge-published {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.3em 0.7em;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0, 198, 255, 0.6);
+  }
+
+  .badge-private {
+    background: linear-gradient(to right, #555, #333);
+    color: #ccc;
+    font-size: 0.7rem;
+    padding: 0.3em 0.7em;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+  }
+
 .btn-outline-light:hover {
     background-color: #00d4ff;
     color: #000;
 }
+
+
+.profile-placeholder-modern {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    backdrop-filter: blur(6px);
+    background: rgba(0, 180, 216, 0.2);
+    border: 1px solid rgba(0, 180, 216, 0.4);
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.6);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 180, 216, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+.profile-placeholder-modern:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 180, 216, 0.45);
+}
+
 
 .btn-primary {
     background-color: #00b4d8;

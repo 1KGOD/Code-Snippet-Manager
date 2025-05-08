@@ -15,7 +15,7 @@ public class Rating {
     @Column(name = "ratingId")
     private Long ratingId;
 
-    private int score; // e.g. 1-5
+    private double score; // e.g. 1-5
 
     @ManyToOne
     @JoinColumn(name = "userId")
@@ -50,11 +50,12 @@ public class Rating {
         this.snippet = snippet;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
     }
+
 }

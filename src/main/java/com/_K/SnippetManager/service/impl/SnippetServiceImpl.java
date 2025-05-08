@@ -81,5 +81,17 @@ public class SnippetServiceImpl implements SnippetService {
         }
     }
 
+    @Override
+    public List<Snippet> publishedSnippet(User user) {
+        List<Snippet> snippets  = snippetDao.findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedTrue(user);
+        return snippets;
+    }
+
+    @Override
+    public List<Snippet> privatedSnippet(User user) {
+        List<Snippet> snippets = snippetDao.findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedFalse(user);
+        return  snippets;
+    }
+
 
 }

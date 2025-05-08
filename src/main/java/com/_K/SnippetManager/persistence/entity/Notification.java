@@ -19,7 +19,7 @@ public class Notification {
     private String message;
 
     @Column(name = "isRead")
-    private boolean isRead;
+    private boolean isRead ;
 
     private LocalDateTime createdAt;
 

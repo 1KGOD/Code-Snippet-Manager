@@ -40,8 +40,6 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
 
     Optional<Snippet> findBySnippetIdAndIsDeletedFalse(Long snippetId);
 
-    @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false AND s.isPublished = true ORDER BY (SELECT COUNT(r) FROM Rating r WHERE r.snippet = s) DESC")
-    List<Snippet> findTop3RatedSnippetsByCount();
 
     @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false AND s.isPublished = true AND " +
             "(LOWER(s.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
@@ -52,5 +50,20 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
                                                Pageable pageable);
 
     long countByUser_UserIDAndIsDeletedFalseAndIsPublishedTrue(Long userId);
+
+    // Custom query to get the top 3 published snippets with the most ratings
+    @Query("SELECT s FROM Snippet s " +
+            "JOIN s.ratings r " +
+            "WHERE s.isPublished = true " +
+            "GROUP BY s.snippetId " +
+            "ORDER BY COUNT(r) DESC")
+    List<Snippet> findTop3RatedSnippetsByCount();
+
+    List<Snippet> findByUserAndIsDeletedFalse(User user);
+
+    List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedTrue(User user);
+
+    List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedFalse(User user);
+
 
 }

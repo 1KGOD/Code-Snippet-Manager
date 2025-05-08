@@ -58,13 +58,18 @@ public class UserForm {
         this.setName(user.getName());
         this.setEmail(user.getEmail());
         this.setPassword(user.getPassword());
-        this.setToken(user.getPasswordRestToken().getFirst().getToken());
+        if (user.getPasswordRestToken() != null && !user.getPasswordRestToken().isEmpty()) {
+            this.setToken(user.getPasswordRestToken().get(0).getToken());
+        } else {
+            this.setToken(null); // or default to "N/A"
+        }
         this.setRole(user.getRole());
         this.setRating(user.getRating());
         this.setNotifications(user.getNotifications());
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdateAt(user.getUpdateAt());
-        this.setDeleted(user.getDeleted());
+        // Safely handle the isDeleted property in case it's null
+        this.setDeleted(user.getDeleted() != null ? user.getDeleted() : false);
     }
 
     public UserForm(){}

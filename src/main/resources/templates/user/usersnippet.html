@@ -40,11 +40,21 @@
 <div class="navbar d-flex align-items-center px-4 py-3 mb-4">
     <div class="d-flex align-items-center">
         <span class="logo-icon">&lt;/&gt;</span>
-        <span class="logo-text ms-2">CodeSnippetManager</span>
+        <span class="logo-text ms-2"><a th:href="@{/home}">CodeSnippetManager</a></span>
     </div>
     <div class="ms-auto d-flex align-items-center">
-        <img th:src="${user.profileImage != null} ? @{${user.profileImage}} : @{/img/default-profile.jpg}" alt="Profile" class="profile-img rounded-circle">
-        <span class="profile-email ms-3" th:text="${user != null ? user.email : 'Guest'}">johndoe@example.com</span>
+        <!-- Show image if exists -->
+        <img th:if="${user.profileImage != null}"
+             th:src="@{${user.profileImage}}"
+             alt="Profile"
+             class="profile-img rounded-circle modern-avatar" />
+
+        <!-- Show initial if no image -->
+        <div th:if="${user.profileImage == null}"
+             th:text="${#strings.substring(user.name, 0, 1)}"
+             class="profile-placeholder-modern rounded-circle">
+        </div>
+
     </div>
 </div>
 

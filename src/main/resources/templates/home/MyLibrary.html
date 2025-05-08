@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Snippet Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <span class="logo-icon">&lt;/&gt;</span>
+        <span class="logo-text ms-2"><a th:href="@{/home}">CodeSnippetManager</a></span>
+    </div>
+
+    <div class="navbar-center">
+        <a th:href="@{/home}" class="nav-link">Home</a>
+        <a th:href="@{/snippets}" class="nav-link">Snippets</a>
+        <a th:href="@{/favorite}" class="nav-link">Favorites</a>
+        <a th:href="@{/myLibrary}" class="nav-link">MyLibrary</a>
+    </div>
+
+    <div class="navbar-right">
+        <div class="navbar-actions">
+
+            <!-- Notification Bell Icon with Badge -->
+            <div class="notification-icon" onclick="toggleNotificationPopup()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" th:text="${notifications.size()}">3</span>
+            </div>
+
+            <!-- Notification Popup -->
+            <div id="notificationPopup" class="notification-popup hidden">
+                <div class="notification-title">Notifications</div>
+
+                <div class="notification-items-wrapper">
+                    <div th:if="${notifications != null and notifications.size() > 0}">
+                        <div th:each="notif : ${notifications}" class="notification-item">
+                            <span th:text="${notif.message}">Someone starred your snippet!</span>
+                            <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'yyyy-MM-dd HH:mm')}">Now</div>
+                        </div>
+                    </div>
+                    <div th:if="${notifications == null or notifications.isEmpty()}">
+                        <div class="notification-item">No new notifications</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" onclick="toggleDropdown(this)">
+                <!-- Show image if exists -->
+                <img th:if="${user.profileImage != null}"
+                     th:src="@{${user.profileImage}}"
+                     alt="Profile"
+                     class="profile-img rounded-circle avatar" />
+
+                <!-- Show initial if no image -->
+                <div th:if="${user.profileImage == null}"
+                     th:text="${#strings.substring(user.name, 0, 1)}"
+                     class="profile-placeholder-modern rounded-circle">
+                </div>
+
+                <span class="username" th:text="${user.name}">Alex Carter</span>
+                <div class="dropdown-menu">
+                    <a th:href="@{/user/dashboard}">Profile</a>
+                    <a th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- Tabs Section -->
+<div class="snippet-tabs-container">
+    <div class="snippet-tabs">
+        <button class="tab-btn active" onclick="showTab('private')">Private Snippets</button>
+        <button class="tab-btn" onclick="showTab('public')">Public Snippets</button>
+    </div>
+
+    <!-- Private Snippets -->
+    <div id="private-snippets" class="snippet-content show">
+        <div class="cards-container">
+            <div th:each="snippet : ${privatedSnippets}" class="snippet-card">
+                <!-- Header -->
+                <div class="snippet-header">
+                    <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+                    <div>
+                        <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
+                        <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
+                    </div>
+                    <span class="language-badge" th:text="${snippet.language.name}">java</span>
+                </div>
+
+                <!-- Title -->
+                <div class="snippet-title" th:text="${snippet.title}">Snippet Title</div>
+
+                <!-- Code Preview -->
+                <pre class="code-preview"><code th:class="'language-' + ${snippet.language.name}" th:text="${#strings.abbreviate(snippet.code, 40)}">System.out.println();</code></pre>
+                <!-- Footer Buttons -->
+                <div class="snippet-footer">
+                    <form th:action="@{rating/star(snippetId=${snippet.snippetId})}" method="post">
+                        <button type="submit" class="icon-btn"><i class="fas fa-star"></i> <span th:text="${snippet.ratings.size()}">0</span></button>
+                    </form>
+                    <button class="icon-btn view-code-btn"
+                            th:attr="data-code=${snippet.code}, data-title=${snippet.title}, data-lang=${snippet.language.name}">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    <button class="icon-btn contact-btn contact-trigger"
+                            th:attr="data-name=${snippet.user.name}, data-email=${snippet.user.email}, data-avatar=${snippet.user.profileImage}">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                </div>
+                <div class="comment-section">
+                    <!-- 📝 Comment Input (Visible only when logged in) -->
+                    <div>
+                        <form th:action="@{/comment/add(snippetId=${snippet.snippetId})}" method="post" class="comment-form">
+                            <input type="text" name="content" placeholder="Add a comment..." required />
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+
+
+                    <!-- 💬 Scrollable Comment List Below -->
+                    <div class="comment-list">
+                        <div th:each="c : ${snippet.comments}" class="comment-item">
+                            <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
+                            <div>
+                                <strong th:text="${c.user.name}">User</strong>
+                                <p th:text="${c.content}">This is a comment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public Snippets -->
+    <div id="public-snippets" class="snippet-content">
+        <div class="cards-container">
+            <div th:each="snippet : ${publishedSnippets}" class="snippet-card">
+                <!-- Header -->
+                <div class="snippet-header">
+                    <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+                    <div>
+                        <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
+                        <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
+                    </div>
+                    <span class="language-badge" th:text="${snippet.language.name}">java</span>
+                </div>
+
+                <!-- Title -->
+                <div class="snippet-title" th:text="${snippet.title}">Snippet Title</div>
+
+                <!-- Code Preview -->
+                <pre class="code-preview"><code th:class="'language-' + ${snippet.language.name}" th:text="${#strings.abbreviate(snippet.code, 40)}">System.out.println();</code></pre>
+                <!-- Footer Buttons -->
+                <div class="snippet-footer">
+                    <form th:action="@{rating/star(snippetId=${snippet.snippetId})}" method="post">
+                        <button type="submit" class="icon-btn"><i class="fas fa-star"></i> <span th:text="${snippet.ratings.size()}">0</span></button>
+                    </form>
+                    <button class="icon-btn view-code-btn"
+                            th:attr="data-code=${snippet.code}, data-title=${snippet.title}, data-lang=${snippet.language.name}">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    <button class="icon-btn contact-btn contact-trigger"
+                            th:attr="data-name=${snippet.user.name}, data-email=${snippet.user.email}, data-avatar=${snippet.user.profileImage}">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                </div>
+                <div class="comment-section">
+                    <!-- 📝 Comment Input (Visible only when logged in) -->
+                    <div>
+                        <form th:action="@{/comment/add(snippetId=${snippet.snippetId})}" method="post" class="comment-form">
+                            <input type="text" name="content" placeholder="Add a comment..." required />
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+
+
+                    <!-- 💬 Scrollable Comment List Below -->
+                    <div class="comment-list">
+                        <div th:each="c : ${snippet.comments}" class="comment-item">
+                            <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
+                            <div>
+                                <strong th:text="${c.user.name}">User</strong>
+                                <p th:text="${c.content}">This is a comment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Code Modal -->
+<div id="codeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Snippet</h3>
+            <button class="code-viewer-close" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+        </div>
+        <span class="lang-label" id="modalLang"></span>
+        <pre><code id="modalCode" class="language-javascript"></code></pre>
+        <button id="copyBtn"><i class="fas fa-copy"></i> <span>Copy</span></button>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div id="contact-modal" class="contact-modal">
+    <div class="modal-contents">
+        <button class="close-btn" onclick="closeContactModal()">×</button>
+        <img id="modal-avatar" class="modal-avatar" />
+        <h2 id="modal-name"></h2>
+        <p id="modal-email"></p>
+
+        <!-- QR Code Container -->
+        <div id="qr-code-container"></div> <!-- Dynamic QR code will be inserted here -->
+    </div>
+</div>
+
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-left">
+
+            <h2 class="footer-logo"><span class="logo-icon">&lt;/&gt;</span>CodeSnippetManager</h2>
+            <p>&copy; 2025 CodeSnippetManager. All rights reserved.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#" class="footer-link">Home</a>
+            <a href="#" class="footer-link">Snippets</a>
+            <a href="#" class="footer-link">Favorites</a>
+            <a href="#" class="footer-link">Workspace</a>
+        </div>
+    </div>
+</footer>
+
+
+
+<script th:inline="javascript">
+    function toggleDropdown(element) {
+    // Close all other dropdowns
+    document.querySelectorAll('.profile-dropdown').forEach(drop => {
+      if (drop !== element) {
+        drop.classList.remove('active');
+      }
+    });
+
+    // Toggle this one
+    element.classList.toggle('active');
+  }
+
+  // Close dropdown if clicked outside
+  document.addEventListener('click', function (event) {
+    const isDropdown = event.target.closest('.profile-dropdown');
+    if (!isDropdown) {
+      document.querySelectorAll('.profile-dropdown').forEach(drop => drop.classList.remove('active'));
+    }
+  });
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+      // View Code Modal
+      const codeModal = document.getElementById("codeModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalLang = document.getElementById("modalLang");
+      const modalCode = document.getElementById("modalCode");
+      const copyBtn = document.getElementById("copyBtn");
+
+      document.querySelectorAll(".view-code-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const code = btn.getAttribute("data-code");
+          const title = btn.getAttribute("data-title");
+          const lang = btn.getAttribute("data-lang");
+
+          modalTitle.textContent = title;
+          modalLang.textContent = lang;
+          modalCode.className = "language-" + lang;
+          modalCode.textContent = code;
+
+          hljs.highlightElement(modalCode);
+          codeModal.style.display = "flex";
+        });
+      });
+
+      // Close Code Modal
+      document.querySelectorAll(".code-viewer-close").forEach(btn => {
+        btn.addEventListener("click", () => {
+          codeModal.style.display = "none";
+        });
+      });
+
+      // Close when clicking outside
+      window.addEventListener("click", e => {
+        if (e.target === codeModal) {
+          codeModal.style.display = "none";
+        }
+      });
+
+      // Copy code button
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(modalCode.textContent).then(() => {
+          copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied';
+          copyBtn.classList.add("copied");
+          setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            copyBtn.classList.remove("copied");
+          }, 2000);
+        });
+      });
+
+      // Contact Modal
+      const contactModal = document.getElementById('contact-modal');
+      const nameEl = document.getElementById('modal-name');
+      const emailEl = document.getElementById('modal-email');
+      const avatarEl = document.getElementById('modal-avatar');
+      const qrCodeContainer = document.getElementById('qr-code-container');
+
+      document.querySelectorAll('.contact-trigger').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const name = btn.dataset.name;
+          const email = btn.dataset.email;
+          const avatar = btn.dataset.avatar;
+
+          nameEl.textContent = name;
+          emailEl.textContent = email;
+          avatarEl.src = avatar;
+
+          qrCodeContainer.innerHTML = '';
+          new QRCode(qrCodeContainer, {
+            text: email,
+            width: 150,
+            height: 150
+          });
+
+          contactModal.classList.add('show');
+        });
+      });
+
+      // Close Contact Modal
+      document.querySelector('.close-btn').addEventListener('click', () => {
+        contactModal.classList.remove('show');
+      });
+
+      // Close when clicking outside contact modal
+      window.addEventListener('click', (e) => {
+        if (e.target === contactModal) {
+          contactModal.classList.remove('show');
+        }
+      });
+    });
+
+   // Attach click event for all contact buttons
+   document.addEventListener('DOMContentLoaded', () => {
+     const triggers = document.querySelectorAll('.contact-trigger');
+     triggers.forEach(btn => {
+       btn.addEventListener('click', () => {
+         const name = btn.dataset.name;
+         const email = btn.dataset.email;
+         const avatar = btn.dataset.avatar;
+         openContactModal(name, email, avatar);
+       });
+     });
+   });
+
+
+
+   function toggleNotificationPopup() {
+      const popup = document.getElementById('notificationPopup');
+      const badge = document.querySelector('.notification-badge');
+      popup.classList.toggle('show');
+      // Hide badge when notification is opened
+    if (popup.classList.contains('show')) {
+      badge.style.display = 'none';
+    }
+    }
+
+    // Optional: Click outside to close
+    document.addEventListener('click', function (event) {
+      const popup = document.getElementById('notificationPopup');
+      const bell = document.querySelector('.notification-icon');
+      if (!popup.contains(event.target) && !bell.contains(event.target)) {
+        popup.classList.remove('show');
+      }
+    });
+
+    function showTab(tabName) {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.snippet-content');
+
+  tabs.forEach(tab => tab.classList.remove('active'));
+  contents.forEach(content => content.classList.remove('show'));
+
+  document.querySelector(`.tab-btn[onclick*="${tabName}"]`).classList.add('active');
+  document.getElementById(`${tabName}-snippets`).classList.add('show');
+}
+
+
+</script>
+</body>
+</html>

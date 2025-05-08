@@ -96,27 +96,14 @@
                 <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Title</th>
                     <th>Language</th>
-                    <th>Code</th>
-                    <th>Publish | Private</th>
-                    <th>User</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="snippetForm , iterStat : ${snippetForms}">
                     <th th:text="${iterStat.index + 1}">1</th>
-                    <td th:text="${snippetForm.title}">Title</td>
                     <td th:text="${snippetForm.language != null ? snippetForm.language.name : 'N/A'}">Language</td>
-                    <td>
-                        <span th:text="${#strings.abbreviate(snippetForm.code, 25)}">Code</span>
-                    </td>
-                    <td>
-                        <span th:if="${snippetForm.published == true}" class="badge-published ms-2">Published</span>
-                        <span th:if="${snippetForm.published != true}" class="badge-private ms-2">Private</span>
-                    </td>
-                    <td th:text="${snippetForm.user != null ? snippetForm.user.name : 'N/A'}">User</td>
                     <td>
                         <a th:href="@{/user/snippet/view(snippetId=${snippetForm.snippetId})}"
                            class="btn btn-outline-secondary btn-sm me-2" title="View">

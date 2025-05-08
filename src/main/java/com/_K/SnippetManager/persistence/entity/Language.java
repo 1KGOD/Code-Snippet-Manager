@@ -1,6 +1,7 @@
 package com._K.SnippetManager.persistence.entity;
 
 
+import com._K.SnippetManager.web.form.LanguageForm;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -49,6 +50,13 @@ public class Language {
     public Snippet getSnippet() {
         return (Snippet) snippet;
     }
+
+    public Language(LanguageForm languageForm){
+        this.setLanguageId(languageForm.getLanguageId());
+        this.setName(languageForm.getName());
+    }
+
+    public Language(){};
 
 
 }

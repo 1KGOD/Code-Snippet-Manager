@@ -60,6 +60,7 @@ public class User {
     private Boolean isDeleted = false ;
 
 
+
     public User(UserForm userForm){
         this.setUserID(userForm.getUserId());
         this.setName(userForm.getName());
@@ -87,7 +88,6 @@ public class User {
         this.setUpdateAt(user.getUpdateAt());
         this.setDeleted(user.getDeleted());
     }
-
 
     public LocalDateTime getUpdateAt() {
         return updateAt;

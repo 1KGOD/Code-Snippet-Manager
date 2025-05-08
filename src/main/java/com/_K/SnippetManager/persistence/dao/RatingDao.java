@@ -23,6 +23,7 @@ public interface RatingDao extends JpaRepository<Rating,Long> {
     @Query("SELECT r FROM Rating r WHERE r.user = :user AND r.snippet.isPublished = true ORDER BY r.snippet.createdAt DESC")
     List<Rating> findByUserAndPublishedSnippetOrderByCreatedAtDesc(@Param("user") User user);
 
+
 }
 
 

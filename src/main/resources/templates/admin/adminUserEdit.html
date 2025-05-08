@@ -40,7 +40,7 @@
 <div class="navbar d-flex align-items-center px-4 py-3 mb-4">
     <div class="d-flex align-items-center">
         <span class="logo-icon">&lt;/&gt;</span>
-        <span class="logo-text ms-2"><a th:href="@{/home}">CodeSnippetManager</a></span>
+        <span class="logo-text ms-2">CodeSnippetManager</span>
     </div>
     <div class="ms-auto d-flex align-items-center">
         <!-- Show image if exists -->
@@ -55,6 +55,7 @@
              class="profile-placeholder-modern rounded-circle">
         </div>
 
+        <span class="profile-email ms-3" th:text="${user != null ? user.email : 'Guest'}">johndoe@example.com</span>
     </div>
 </div>
 
@@ -62,10 +63,10 @@
     <!-- Sidebar -->
     <div class="sidebar p-4">
         <div class="menu-block">
-            <a th:href="@{/user/dashboard}" th:classappend="${page=='dashboard'} ? 'active-menu-link'"class="menu-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a th:href="@{/user/snippet}" th:classappend="${page=='snippet'} ? 'active-menu-link'"class="menu-link"><i class="bi bi-code-square me-2"></i> Snippets</a>
-            <a th:href="@{/user/snippet/list}" th:classappend="${page =='snippets'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-code-square me-2"></i> SnippetsList</a>
-            <a th:href="@{/user/profile}" th:classappend="${page=='profile'} ? 'active-menu-link'"class="menu-link"><i class="bi bi-person-circle me-2"></i> Profile</a>
+            <a th:href="@{/admin/dashboard}" th:classappend="${page=='dashboard'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a th:href="@{/admin/user/list}" th:classappend="${page=='snippets'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-code-square me-2"></i> UserList</a>
+            <a th:href="@{/admin/user/language}" th:classappend="${page=='snippets'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-code-square me-2"></i> Language</a>
+            <a th:href="@{/admin/profile}" th:classappend="${page=='profile'} ? 'active-menu-link'" class="menu-link"><i class="bi bi-person-circle me-2"></i> Profile</a>
             <a th:href="@{/logout}" class="menu-link" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i> Log out</a>
         </div>
     </div>
@@ -73,33 +74,22 @@
     <!-- Main Content -->
     <div class="flex-grow-1 main-content">
         <div class="form-card">
-            <h1>&lt;/&gt; Code Snippet</h1>
-            <form th:action="@{/user/snippet/edit}" th:object="${snippetForm}" method="post">
-                <input type="hidden" th:field="*{snippetId}"/>
+            <h1>&lt;/&gt; User Edit</h1>
+            <form th:action="@{/admin/user/edit}" th:object="${userForm}" method="post">
+                <input type="hidden" th:field="*{userId}"/>
 
                 <div class="mb-3">
-                    <label class="form-label">Title:</label>
-                    <input type="text" th:field="*{title}" class="form-control" required placeholder="Enter snippet title" />
+                    <label class="form-label">UserName:</label>
+                    <input type="text" th:field="*{name}" class="form-control" required placeholder="Enter your username" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Language:</label>
-                    <select th:field="*{language.languageId}" class="form-control" required>
-                        <option value="" disabled selected>Select a language</option>
-                        <option th:each="language : ${lang}"
-                                th:value="${language.languageId}"
-                                th:text="${language.name}">
-                        </option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Code:</label>
-                    <textarea th:field="*{code}" id="code" rows="10" class="form-control" placeholder="Write your code here..."></textarea>
+                    <label class="form-label">Email:</label>
+                    <input type="text" th:field="*{email}" class="form-control" required placeholder="Enter your email" />
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Edit Snippet</button>
+                    <button type="submit" class="btn btn-primary">Edit User</button>
                 </div>
             </form>
         </div>

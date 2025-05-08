@@ -81,14 +81,7 @@ public class SnippetController {
 
         if(user.isPresent()){
             User user1 = user.get();
-            System.out.println("User ID: " + user1.getUserID());
-            System.out.println("User Email: " + user1.getEmail());
-            System.out.println("User Name: " + user1.getName());
             Page<SnippetForm> snippetForms = snippetService.getAllSnippets(user1.getUserID(), page,size,keyword);
-            System.out.println("Snippets found: " + snippetForms.getTotalElements());
-            for (SnippetForm snippet : snippetForms) {
-                System.out.println("Snippet Title: " + snippet.getTitle());
-            }
             model.addAttribute("snippetForms",snippetForms.getContent());
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPage", snippetForms.getTotalElements());
@@ -106,9 +99,12 @@ public class SnippetController {
         List<Language> lang = languageDao.findAll();
         Optional<Snippet> snippet = snippetDao.findById(snippetId);
 
+        if(snippet.isEmpty()){
+            return "error/user404";
+        }
+
         if(snippet.isPresent()){
             SnippetForm snippetForm = new SnippetForm(snippet.get());
-            System.out.println("Snippet ID: " + snippetForm.getSnippetId());
             model.addAttribute("snippetForm", snippetForm);
             model.addAttribute("lang",lang);
             model.addAttribute("user",user.orElse(null));

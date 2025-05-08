@@ -40,6 +40,7 @@ public class SnippetForm {
         this.setTitle(snippet.getTitle());
         this.setLanguage(snippet.getLanguage());
         this.setUser(snippet.getUser());
+        this.setPublished(snippet.getPublished());
         this.setCreatedAt(snippet.getCreatedAt());
         this.setUpdatedAt(snippet.getUpdateAt());
         this.setCode(snippet.getCode());
