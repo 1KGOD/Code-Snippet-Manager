@@ -186,7 +186,10 @@
   <div id="contact-modal" class="contact-modal">
     <div class="modal-contents">
       <button class="close-btn" onclick="closeContactModal()">×</button>
-      <img id="modal-avatar" class="modal-avatar" />
+      <div class="avatar-wrapper">
+        <img id="modal-avatar" class="modal-avatar rounded-circle" style="display: none;" />
+        <div id="modal-avatars" class="profile-placeholder-moderns rounded-circle" style="display: none;"></div>
+      </div>
       <h2 id="modal-name"></h2>
       <p id="modal-email"></p>
 
@@ -290,7 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const contactModal = document.getElementById('contact-modal');
     const nameEl = document.getElementById('modal-name');
     const emailEl = document.getElementById('modal-email');
-    const avatarEl = document.getElementById('modal-avatar');
+    const avatarImg = document.getElementById('modal-avatar');
+    const avatarPlaceholder = document.getElementById('modal-avatars');
     const qrCodeContainer = document.getElementById('qr-code-container');
 
     document.querySelectorAll('.contact-trigger').forEach(btn => {
@@ -301,7 +305,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         nameEl.textContent = name;
         emailEl.textContent = email;
-        avatarEl.src = avatar;
+        if (avatar && avatar.trim() !== '' && avatar !== 'null') {
+        avatarImg.src = avatar;
+        avatarImg.style.display = 'block';
+        avatarPlaceholder.style.display = 'none';
+      } else {
+        avatarImg.style.display = 'none';
+        avatarPlaceholder.textContent = name.charAt(0).toUpperCase();
+        avatarPlaceholder.style.display = 'flex';
+      }
 
         qrCodeContainer.innerHTML = '';
         new QRCode(qrCodeContainer, {

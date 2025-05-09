@@ -79,22 +79,17 @@
     <!-- Main Content -->
     <div class="flex-grow-1 main-content">
         <div class="form-card">
-            <h1>&lt;/&gt; User Edit</h1>
-            <form th:action="@{/admin/user/edit}" th:object="${userForm}" method="post">
-                <input type="hidden" th:field="*{userId}"/>
+            <h1>&lt;/&gt; Language Edit</h1>
+            <form th:action="@{/admin/language/edit}" th:object="${languageForm}" method="post">
+                <input type="hidden" th:field="*{languageId}"/>
 
                 <div class="mb-3">
-                    <label class="form-label">UserName:</label>
-                    <input type="text" th:field="*{name}" class="form-control" required placeholder="Enter your username" />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email:</label>
-                    <input type="text" th:field="*{email}" class="form-control" required placeholder="Enter your email" />
+                    <label class="form-label">Language Name:</label>
+                    <input type="text" th:field="*{name}" class="form-control" required placeholder="Enter Language Name" />
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Edit User</button>
+                    <button type="submit" class="btn btn-primary">Edit Language</button>
                 </div>
             </form>
         </div>

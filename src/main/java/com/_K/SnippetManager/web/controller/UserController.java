@@ -1,5 +1,6 @@
 package com._K.SnippetManager.web.controller;
 
+import com._K.SnippetManager.persistence.dao.LanguageDao;
 import com._K.SnippetManager.persistence.dao.PasswordResetTokenDao;
 import com._K.SnippetManager.persistence.dao.SnippetDao;
 import com._K.SnippetManager.persistence.dao.UserDao;
@@ -33,10 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.swing.text.html.Option;
 import java.security.PublicKey;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -50,8 +48,9 @@ public class UserController {
     private final PasswordResetTokenDao passwordResetTokenDao;
     private final PasswordService passwordService;
     private final LanguageService languageService;
+    private final LanguageDao languageDao;
 
-    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadServiceImpl fileUploadServiceImpl, EmailServiceImpl emailServiceImpl, PasswordEncoder encoder, PasswordResetTokenDao passwordResetTokenDao, PasswordService passwordService, LanguageService languageService) {
+    public UserController(UserService userService, UserDao userDao, SnippetDao snippetDao, FileUploadServiceImpl fileUploadServiceImpl, EmailServiceImpl emailServiceImpl, PasswordEncoder encoder, PasswordResetTokenDao passwordResetTokenDao, PasswordService passwordService, LanguageService languageService, LanguageDao languageDao) {
         this.userService = userService;
         this.userDao = userDao;
         this.snippetDao = snippetDao;
@@ -61,6 +60,7 @@ public class UserController {
         this.passwordResetTokenDao = passwordResetTokenDao;
         this.passwordService = passwordService;
         this.languageService = languageService;
+        this.languageDao = languageDao;
     }
 
     @RequestMapping(value = "/register" , method = RequestMethod.GET)
@@ -101,8 +101,6 @@ public class UserController {
 
         if(users.isPresent()){
             User user = users.get();
-//            System.out.println("User found: " + user.getEmail());
-            // Here you can implement the logic to send a reset password email
             String token = UUID.randomUUID().toString();
             PasswordRestToken resetToken = new PasswordRestToken();
             resetToken.setToken(token);
@@ -423,7 +421,80 @@ public class UserController {
 
     @RequestMapping("/admin/**")
     public String handleInvalidAdminSubPaths(HttpServletRequest request) {
-        return "error/404Admin"; 
+        return "error/404Admin";
+    }
+
+    @RequestMapping(value = "/admin/language/list" , method = RequestMethod.GET)
+    public String adminLanguageList(@RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "5") int size,
+                                    @RequestParam(required = false)String keyword,@AuthenticationPrincipal UserDetails userDetails , Model model){
+
+        if(userDetails != null){
+            String email = userDetails.getUsername();
+            Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+            if(users.isPresent()){
+                User user = users.get();
+                Page<LanguageForm> languageForms = languageService.getAllLanguages(page,size,keyword);
+                model.addAttribute("languageForms",languageForms.getContent());
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPage", languageForms.getTotalElements());
+                model.addAttribute("keyword", keyword);
+                model.addAttribute("user",user);
+            }
+        }
+
+        return "admin/adminLanguageList";
+    }
+
+    @RequestMapping(value = "/admin/language/edit" , method = RequestMethod.GET)
+    public String adminLanguageEdit(@RequestParam("languageId") Long languageId , @AuthenticationPrincipal UserDetails userDetails , Model model){
+        if(userDetails != null){
+            String email = userDetails.getUsername();
+            Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+            Language language = languageDao.findById(languageId).orElseThrow();
+            if(users.isPresent()){
+                User user = users.get();
+                LanguageForm languageForm = new LanguageForm(language);
+                model.addAttribute("user",user);
+                model.addAttribute("languageForm",languageForm);
+            }
+        }
+        return "admin/adminLanguageEdit";
+    }
+
+    @RequestMapping(value = "/admin/language/edit" , method = RequestMethod.POST)
+    public String adminLanguageUpdate(@RequestParam("languageId") Long languageId , @ModelAttribute("languageForm") LanguageForm languageForm , @AuthenticationPrincipal UserDetails userDetails , Model model){
+        if(userDetails != null){
+            String email = userDetails.getUsername();
+            Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+            if(users.isPresent()){
+                User user = users.get();
+                languageService.editLanguage(languageId,languageForm);
+            }
+        }
+        return "redirect:/admin/language/list";
+    }
+
+    @RequestMapping(value = "/admin/language/delete" , method = RequestMethod.GET)
+    public String adminLanguageDelete(@RequestParam("languageId") Long languageId , @AuthenticationPrincipal UserDetails userDetails , Model model , RedirectAttributes redirectAttributes){
+        if(userDetails != null){
+            String email = userDetails.getUsername();
+            Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
+            if(users.isPresent()){
+                User user = users.get();
+                try {
+                    languageService.deleteLanguage(languageId);
+                    redirectAttributes.addFlashAttribute("successMessage", "Language deleted successfully.");
+                } catch (IllegalStateException e) {
+                    redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                } catch (NoSuchElementException e) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Language not found.");
+                }
+            }
+        }
+
+        return "redirect:/admin/language/list";
+
     }
 
 

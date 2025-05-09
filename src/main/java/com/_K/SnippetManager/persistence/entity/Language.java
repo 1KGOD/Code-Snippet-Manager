@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,10 +23,22 @@ public class Language {
 
     private String name;
 
+    private Boolean isDeleted = false;
+
+    private LocalDateTime updateAt;
+
     @OneToMany(mappedBy = "language")
     @JsonIgnore
     private List<Snippet> snippet;
 
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
 
     public Long getLanguageId() {
         return languageId;
@@ -49,6 +62,14 @@ public class Language {
 
     public Snippet getSnippet() {
         return (Snippet) snippet;
+    }
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(LocalDateTime updateAt) {
+        this.updateAt = updateAt;
     }
 
     public Language(LanguageForm languageForm){

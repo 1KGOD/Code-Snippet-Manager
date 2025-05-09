@@ -1335,29 +1335,7 @@ a{
   margin-bottom: 20px;
 }
 
-.profile-placeholder-modern {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    backdrop-filter: blur(6px);
-    background: rgba(0, 180, 216, 0.2);
-    border: 1px solid rgba(0, 180, 216, 0.4);
-    box-shadow: 0 0 10px rgba(0, 180, 216, 0.6);
-    color: white;
-    font-weight: 600;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-    box-shadow: 0 4px 10px rgba(0, 180, 216, 0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: default;
-}
-.profile-placeholder-modern:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 14px rgba(0, 180, 216, 0.45);
-}
+
 
 .tab-btn {
   padding: 10px 20px;
@@ -1394,3 +1372,52 @@ a{
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+.profile-placeholder-modern {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    backdrop-filter: blur(6px);
+    background: rgba(0, 180, 216, 0.2);
+    border: 1px solid rgba(0, 180, 216, 0.4);
+    box-shadow: 0 0 10px rgba(0, 180, 216, 0.6);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 180, 216, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+.profile-placeholder-modern:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 180, 216, 0.45);
+}
+
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.profile-placeholder-moderns {
+  width: 80px;
+  height: 80px;
+   border-radius: 50%;
+   backdrop-filter: blur(6px);
+   background: rgba(0, 180, 216, 0.2);
+   border: 1px solid rgba(0, 180, 216, 0.4);
+   box-shadow: 0 0 10px rgba(0, 180, 216, 0.6);
+  font-size: 2rem;
+  font-weight: bold;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+

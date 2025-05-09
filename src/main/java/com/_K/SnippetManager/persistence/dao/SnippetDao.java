@@ -1,5 +1,6 @@
 package com._K.SnippetManager.persistence.dao;
 
+import com._K.SnippetManager.persistence.entity.Language;
 import com._K.SnippetManager.persistence.entity.Snippet;
 import com._K.SnippetManager.persistence.entity.User;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,8 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
     List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedTrue(User user);
 
     List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedFalse(User user);
+
+    Boolean existsByLanguageAndIsDeletedFalse(Language language);
 
 
 }
