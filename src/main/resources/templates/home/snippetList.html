@@ -61,14 +61,13 @@
         <img th:if="${user.profileImage != null}"
              th:src="@{${user.profileImage}}"
              alt="Profile"
-             class="profile-img rounded-circle avatar" />
+             class="profile-img rounded-circle avatar" >
 
         <!-- Show initial if no image -->
         <div th:if="${user.profileImage == null}"
              th:text="${#strings.substring(user.name, 0, 1)}"
              class="profile-placeholder-modern rounded-circle">
         </div>
-        />
         <span class="username" th:text="${user.name}">Alex Carter</span>
         <div class="dropdown-menu">
           <a th:href="@{/user/dashboard}">Profile</a>
@@ -115,7 +114,16 @@
     <div th:each="snippet : ${snippetPage}" class="snippet-card">
       <!-- Header -->
       <div class="snippet-header">
-        <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+        <img th:if="${snippet.user.profileImage != null}"
+             th:src="@{${snippet.user.profileImage}}"
+             alt="Profile"
+             class="profile-img rounded-circle avatar" >
+
+        <!-- Show initial if no image -->
+        <div th:if="${snippet.user.profileImage == null}"
+             th:text="${#strings.substring(snippet.user.name, 0, 1)}"
+             class="profile-placeholder-modern rounded-circle">
+        </div>
         <div>
           <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
           <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
@@ -155,8 +163,17 @@
         <!-- 💬 Scrollable Comment List Below -->
         <div class="comment-list">
           <div th:each="c : ${snippet.comments}" class="comment-item">
-            <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
-            <div>
+            <img th:if="${c.user.profileImage != null}"
+                 th:src="@{${c.user.profileImage}}"
+                 alt="Profile"
+                 class="profile-img rounded-circle avatar" >
+
+            <!-- Show initial if no image -->
+            <div th:if="${c.user.profileImage == null}"
+                 th:text="${#strings.substring(c.user.name, 0, 1)}"
+                 class="profile-placeholders-moderns rounded-circle">
+            </div>
+            <div class="comment-text">
               <strong th:text="${c.user.name}">User</strong>
               <p th:text="${c.content}">This is a comment</p>
             </div>
@@ -360,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.classList.toggle('show');
     // Hide badge when notification is opened
   if (popup.classList.contains('show')) {
+  fetch('/notification/unread/mark-all-read', { method: 'POST' });
     badge.style.display = 'none';
   }
   }

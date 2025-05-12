@@ -18,6 +18,9 @@ public class UserForm {
     @Valid
     private Long userId;
 
+//    @NotNull
+//    private List<Long> userIds;
+
     @Size(min = 2, message = "Name must be at least 2 characters long")
     private String name;
 
@@ -71,6 +74,14 @@ public class UserForm {
         // Safely handle the isDeleted property in case it's null
         this.setDeleted(user.getDeleted() != null ? user.getDeleted() : false);
     }
+
+//    public List<Long> getUserIds() {
+//        return userIds;
+//    }
+//
+//    public void setUserIds(List<Long> userIds) {
+//        this.userIds = userIds;
+//    }
 
     public UserForm(){}
 

@@ -16,7 +16,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userDao = userDao;
     }
 
-    //input email/pwd -> validation -> true -> authObj
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         com._K.SnippetManager.persistence.entity.User user = this.userDao.findByEmailAndIsDeletedFalse(email)

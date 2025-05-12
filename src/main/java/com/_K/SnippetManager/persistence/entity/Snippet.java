@@ -40,6 +40,15 @@ public class Snippet {
     @OneToMany(mappedBy = "snippet")
     private List<Notification> notifications;
 
+    @ManyToMany
+    @JoinTable(
+            name = "snippet_shared_users",
+            joinColumns = @JoinColumn(name = "snippetId"),
+            inverseJoinColumns = @JoinColumn(name = "userID")
+    )
+    @JsonIgnore
+    private List<User> sharedWithUsers;
+
 
     @OneToMany(mappedBy = "snippet")
     private List<Comment> comments;
@@ -51,7 +60,6 @@ public class Snippet {
     private Boolean isDeleted = false ;
 
     private Boolean isPublished = false;
-
 
 
 
@@ -72,9 +80,18 @@ public class Snippet {
         return notifications;
     }
 
+    public List<User> getSharedWithUsers() {
+        return sharedWithUsers;
+    }
+
+    public void setSharedWithUsers(List<User> sharedWithUsers) {
+        this.sharedWithUsers = sharedWithUsers;
+    }
+
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
+
 
     public List<Comment> getComments() {
         return comments;

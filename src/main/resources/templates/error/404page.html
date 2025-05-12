@@ -14,59 +14,7 @@
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar">
-    <div class="navbar-left">
-        <span class="logo-icon">&lt;/&gt;</span>
-        <span class="logo-text">CodeSnippetManager</span>
-    </div>
 
-    <div class="navbar-center">
-        <a href="#" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Snippets</a>
-        <a href="#" class="nav-link">Favorites</a>
-    </div>
-
-    <div class="navbar-right">
-        <div class="navbar-actions">
-
-            <!-- Notification Bell Icon with Badge -->
-            <div class="notification-icon" onclick="toggleNotificationPopup()">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge" th:text="${notifications.size()}">3</span>
-            </div>
-
-            <!-- Notification Popup -->
-            <div id="notificationPopup" class="notification-popup hidden">
-                <div class="notification-title">Notifications</div>
-
-                <div class="notification-items-wrapper">
-                    <div th:if="${notifications != null and notifications.size() > 0}">
-                        <div th:each="notif : ${notifications}" class="notification-item">
-                            <span th:text="${notif.message}">Someone starred your snippet!</span>
-                            <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'yyyy-MM-dd HH:mm')}">Now</div>
-                        </div>
-                    </div>
-                    <div th:if="${notifications == null or notifications.isEmpty()}">
-                        <div class="notification-item">No new notifications</div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Profile Dropdown -->
-            <div class="profile-dropdown" onclick="toggleDropdown(this)">
-                <img  th:if="${user.profileImage != null}" th:src="@{${user.profileImage}}" alt="Profile" class="avatar" />
-                <img  th:if="${user.profileImage == null}" th:src="@{/img/default-profile.jpg}" alt="Profile" class="avatar" />
-                <span class="username" th:text="${user.name}">Alex Carter</span>
-                <div class="dropdown-menu">
-                    <a th:href="@{/user/dashboard}">Profile</a>
-                    <a th:href="@{/logout}">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
 
 <div class="error-container">
     <div class="error-code">404</div>

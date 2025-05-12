@@ -114,7 +114,16 @@
         <div th:each="snippet : ${starredSnippets}" class="snippet-card">
             <!-- Header -->
             <div class="snippet-header">
-                <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+                <img th:if="${snippet.user.profileImage != null}"
+                     th:src="@{${snippet.user.profileImage}}"
+                     alt="Profile"
+                     class="profile-img rounded-circle avatar" >
+
+                <!-- Show initial if no image -->
+                <div th:if="${snippet.user.profileImage == null}"
+                     th:text="${#strings.substring(snippet.user.name, 0, 1)}"
+                     class="profile-placeholder-modern rounded-circle">
+                </div>
                 <div>
                     <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
                     <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
@@ -154,8 +163,17 @@
                 <!-- 💬 Scrollable Comment List Below -->
                 <div class="comment-list">
                     <div th:each="c : ${snippet.comments}" class="comment-item">
-                        <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
-                        <div>
+                        <img th:if="${c.user.profileImage != null}"
+                             th:src="@{${c.user.profileImage}}"
+                             alt="Profile"
+                             class="profile-img rounded-circle avatar" >
+
+                        <!-- Show initial if no image -->
+                        <div th:if="${c.user.profileImage == null}"
+                             th:text="${#strings.substring(c.user.name, 0, 1)}"
+                             class="profile-placeholders-moderns rounded-circle">
+                        </div>
+                        <div class="comment-text">
                             <strong th:text="${c.user.name}">User</strong>
                             <p th:text="${c.content}">This is a comment</p>
                         </div>
@@ -352,24 +370,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-   function toggleNotificationPopup() {
-      const popup = document.getElementById('notificationPopup');
-      const badge = document.querySelector('.notification-badge');
-      popup.classList.toggle('show');
-      // Hide badge when notification is opened
-    if (popup.classList.contains('show')) {
-      badge.style.display = 'none';
-    }
-    }
+  function toggleNotificationPopup() {
+    const popup = document.getElementById('notificationPopup');
+    const badge = document.querySelector('.notification-badge');
+    popup.classList.toggle('show');
+    // Hide badge when notification is opened
+  if (popup.classList.contains('show')) {
+  fetch('/notification/unread/mark-all-read', { method: 'POST' });
+    badge.style.display = 'none';
+  }
+  }
 
-    // Optional: Click outside to close
-    document.addEventListener('click', function (event) {
-      const popup = document.getElementById('notificationPopup');
-      const bell = document.querySelector('.notification-icon');
-      if (!popup.contains(event.target) && !bell.contains(event.target)) {
-        popup.classList.remove('show');
-      }
-    });
+  // Optional: Click outside to close
+  document.addEventListener('click', function (event) {
+    const popup = document.getElementById('notificationPopup');
+    const bell = document.querySelector('.notification-icon');
+    if (!popup.contains(event.target) && !bell.contains(event.target)) {
+      popup.classList.remove('show');
+    }
+  });
 
 </script>
 </body>

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,6 +52,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
+    @ManyToMany(mappedBy = "sharedWithUsers")
+    @JsonIgnore
+    private List<Snippet> sharedSnippets = new ArrayList<>();
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updateAt;
@@ -87,6 +92,14 @@ public class User {
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdateAt(user.getUpdateAt());
         this.setDeleted(user.getDeleted());
+    }
+
+    public List<Snippet> getSharedSnippets() {
+        return sharedSnippets;
+    }
+
+    public void setSharedSnippets(List<Snippet> sharedSnippets) {
+        this.sharedSnippets = sharedSnippets;
     }
 
     public LocalDateTime getUpdateAt() {

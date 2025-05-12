@@ -18,6 +18,8 @@ public class Notification {
 
     private String message;
 
+
+
     @Column(name = "isRead")
     private boolean isRead ;
 
@@ -30,6 +32,7 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "snippetId")
     private Snippet snippet;
+
 
     public Snippet getSnippet() {
         return snippet;

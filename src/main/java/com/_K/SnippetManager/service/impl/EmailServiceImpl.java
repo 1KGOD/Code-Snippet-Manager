@@ -12,11 +12,6 @@ public class EmailServiceImpl {
     private JavaMailSender javaMailSender;
 
     public void sendResetMail(String to, String resetLink) {
-        // Implement the logic to send an email using JavaMailSender
-        // This is a placeholder for the actual implementation
-
-        // You can use JavaMailSender to send the email here
-        // For example:
          SimpleMailMessage message = new SimpleMailMessage();
          message.setTo(to);
          message.setSubject("Reset Your Password");

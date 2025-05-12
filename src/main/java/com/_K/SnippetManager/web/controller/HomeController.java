@@ -3,6 +3,7 @@ package com._K.SnippetManager.web.controller;
 import com._K.SnippetManager.persistence.dao.*;
 import com._K.SnippetManager.persistence.entity.*;
 import com._K.SnippetManager.service.SnippetService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
@@ -17,10 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
@@ -184,6 +182,11 @@ public class HomeController {
 
     }
 
+    @RequestMapping("/snippets/**")
+    public String handleInvalidSnippetPath() {
+        return "error/404page";
+    }
+
     @RequestMapping(value = "/favorite", method = RequestMethod.GET)
     public String starList(@AuthenticationPrincipal UserDetails userDetails,
                            @RequestParam(value = "keyword", required = false) String keyword,
@@ -227,25 +230,21 @@ public class HomeController {
                 ratings1 = ratingDao.findByUserAndPublishedSnippetOrderByCreatedAtDesc(user);
             }
 
-            // Process starred snippets
             List<Snippet> starredSnippets = ratings1.stream()
                     .map(Rating::getSnippet)
                     .filter(s -> s != null && s.getUser() != null)
                     .collect(Collectors.toList());
 
-            // Notifications
             List<Notification> notifications = notificationDao.findByUserAndIsReadFalse(user);
             if (notifications == null) {
                 notifications = new ArrayList<>();
             }
 
-            // Comments
             List<Comment> comments = new ArrayList<>();
             if (!starredSnippets.isEmpty()) {
                 comments = commentDao.findBySnippetOrderByCreatedAtDesc(starredSnippets.get(0));
             }
 
-            // Add attributes to model
             model.addAttribute("starredSnippets", starredSnippets);
             model.addAttribute("keyword", keyword);
             model.addAttribute("language", languageName);
@@ -254,6 +253,11 @@ public class HomeController {
             model.addAttribute("user", user);
         }
         return "home/starredList";
+    }
+
+    @RequestMapping("/favorite/**")
+    public String handleInvalidFavoritePath() {
+        return "error/404page";
     }
 
 
@@ -275,7 +279,7 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/myLibrary" , method = RequestMethod.GET)
-    public String myLibrary(@AuthenticationPrincipal UserDetails userDetails , Model model){
+    public String myLibrary(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(value = "sharedUserId" , required = false)Long sharedUserId , Model model ){
         String email = userDetails.getUsername();
         Optional<User> users = userDao.findByEmailAndIsDeletedFalse(email);
         if(users.isPresent()){
@@ -283,12 +287,21 @@ public class HomeController {
             List<Notification> notifications = notificationDao.findByUserAndIsReadFalse(user);
             List<Snippet> publishedSnippets = snippetService.publishedSnippet(user);
             List<Snippet> privatedSnippets =  snippetService.privatedSnippet(user);
+            List<Snippet> sharedSnippets = snippetService.sharedSnippets(user.getUserID());
+
+
             model.addAttribute("user",user);
             model.addAttribute("notifications",notifications);
             model.addAttribute("publishedSnippets",publishedSnippets);
             model.addAttribute("privatedSnippets",privatedSnippets);
+            model.addAttribute("sharedSnippets",sharedSnippets);
         }
         return "home/MyLibrary";
+    }
+
+    @RequestMapping("/myLibrary/**")
+    public String handleInvalidMyLibrryPath() {
+        return "error/404page";
     }
 
 

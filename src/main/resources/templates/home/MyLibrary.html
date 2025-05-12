@@ -85,6 +85,7 @@
     <div class="snippet-tabs">
         <button class="tab-btn active" onclick="showTab('private')">Private Snippets</button>
         <button class="tab-btn" onclick="showTab('public')">Public Snippets</button>
+        <button class="tab-btn" onclick="showTab('shared')">Share Snippets</button>
     </div>
 
     <!-- Private Snippets -->
@@ -93,10 +94,19 @@
             <div th:each="snippet : ${privatedSnippets}" class="snippet-card">
                 <!-- Header -->
                 <div class="snippet-header">
-                    <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+                    <img th:if="${user.profileImage != null}"
+                         th:src="@{${user.profileImage}}"
+                         alt="Profile"
+                         class="profile-img rounded-circle avatar" >
+
+                    <!-- Show initial if no image -->
+                    <div th:if="${user.profileImage == null}"
+                         th:text="${#strings.substring(user.name, 0, 1)}"
+                         class="profile-placeholder-modern rounded-circle">
+                    </div>
                     <div>
                         <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
-                        <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
+                        <div class="snippet-date" th:text="${#temporals.format(snippet.createdAt, 'yyyy-MM-dd')}">2025-05-03</div>
                     </div>
                     <span class="language-badge" th:text="${snippet.language.name}">java</span>
                 </div>
@@ -119,6 +129,9 @@
                             th:attr="data-name=${snippet.user.name}, data-email=${snippet.user.email}, data-avatar=${snippet.user.profileImage}">
                         <i class="fas fa-envelope"></i>
                     </button>
+                    <button class="icon-btn share-btn" th:attr="data-snippet-id=${snippet.snippetId}, data-title=${snippet.title}">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
                 </div>
                 <div class="comment-section">
                     <!-- 📝 Comment Input (Visible only when logged in) -->
@@ -133,8 +146,17 @@
                     <!-- 💬 Scrollable Comment List Below -->
                     <div class="comment-list">
                         <div th:each="c : ${snippet.comments}" class="comment-item">
-                            <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
-                            <div>
+                            <img th:if="${c.user.profileImage != null}"
+                                 th:src="@{${c.user.profileImage}}"
+                                 alt="Profile"
+                                 class="profile-img rounded-circle avatar" >
+
+                            <!-- Show initial if no image -->
+                            <div th:if="${c.user.profileImage == null}"
+                                 th:text="${#strings.substring(c.user.name, 0, 1)}"
+                                 class="profile-placeholders-moderns rounded-circle">
+                            </div>
+                            <div class="comment-text">
                                 <strong th:text="${c.user.name}">User</strong>
                                 <p th:text="${c.content}">This is a comment</p>
                             </div>
@@ -151,7 +173,16 @@
             <div th:each="snippet : ${publishedSnippets}" class="snippet-card">
                 <!-- Header -->
                 <div class="snippet-header">
-                    <img th:src="@{${snippet.user.profileImage} ?: '/img/default-profile.jpg'}" class="avatar" />
+                    <img th:if="${user.profileImage != null}"
+                         th:src="@{${user.profileImage}}"
+                         alt="Profile"
+                         class="profile-img rounded-circle avatar" >
+
+                    <!-- Show initial if no image -->
+                    <div th:if="${user.profileImage == null}"
+                         th:text="${#strings.substring(user.name, 0, 1)}"
+                         class="profile-placeholder-modern rounded-circle">
+                    </div>
                     <div>
                         <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
                         <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
@@ -191,8 +222,94 @@
                     <!-- 💬 Scrollable Comment List Below -->
                     <div class="comment-list">
                         <div th:each="c : ${snippet.comments}" class="comment-item">
-                            <img th:src="@{${c.user.profileImage} ?: '/img/default-profile.jpg'}" class="comment-avatar" />
-                            <div>
+                            <img th:if="${c.user.profileImage != null}"
+                                 th:src="@{${c.user.profileImage}}"
+                                 alt="Profile"
+                                 class="profile-img rounded-circle avatar" >
+
+                            <!-- Show initial if no image -->
+                            <div th:if="${c.user.profileImage == null}"
+                                 th:text="${#strings.substring(c.user.name, 0, 1)}"
+                                 class="profile-placeholders-moderns rounded-circle">
+                            </div>
+                            <div class="comment-text">
+                                <strong th:text="${c.user.name}">User</strong>
+                                <p th:text="${c.content}">This is a comment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Snippets -->
+    <div id="shared-snippets" class="snippet-content" th:if="${#lists.size(sharedSnippets) > 0}" >
+        <div class="cards-container">
+            <div th:each="snippet : ${sharedSnippets}" class="snippet-card">
+                <!-- Header -->
+                <div class="snippet-header">
+                    <img th:if="${snippet.user.profileImage != null}"
+                         th:src="@{${snippet.user.profileImage}}"
+                         alt="Profile"
+                         class="profile-img rounded-circle avatar" >
+
+                    <!-- Show initial if no image -->
+                    <div th:if="${snippet.user.profileImage == null}"
+                         th:text="${#strings.substring(snippet.user.name, 0, 1)}"
+                         class="profile-placeholder-modern rounded-circle">
+                    </div>
+                    <div>
+                        <div class="user-name" th:text="${snippet.user.name}">John Doe</div>
+                        <div class="snippet-date" th:text="${#temporals.format(snippet.updateAt, 'yyyy-MM-dd')}">2025-05-03</div>
+                    </div>
+                    <span class="language-badge" th:text="${snippet.language.name}">java</span>
+                </div>
+
+                <!-- Title -->
+                <div class="snippet-title" th:text="${snippet.title}">Snippet Title</div>
+
+                <!-- Code Preview -->
+                <pre class="code-preview"><code th:class="'language-' + ${snippet.language.name}" th:text="${#strings.abbreviate(snippet.code, 40)}">System.out.println();</code></pre>
+                <!-- Footer Buttons -->
+                <div class="snippet-footer">
+                    <form th:action="@{rating/star(snippetId=${snippet.snippetId})}" method="post">
+                        <button type="submit" class="icon-btn"><i class="fas fa-star"></i> <span th:text="${snippet.ratings.size()}">0</span></button>
+                    </form>
+                    <button class="icon-btn view-code-btn"
+                            th:attr="data-code=${snippet.code}, data-title=${snippet.title}, data-lang=${snippet.language.name}">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    <button class="icon-btn contact-btn contact-trigger"
+                            th:attr="data-name=${snippet.user.name}, data-email=${snippet.user.email}, data-avatar=${snippet.user.profileImage}">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                </div>
+                <div class="comment-section">
+                    <!-- 📝 Comment Input (Visible only when logged in) -->
+                    <div>
+                        <form th:action="@{/comment/add(snippetId=${snippet.snippetId})}" method="post" class="comment-form">
+                            <input type="text" name="content" placeholder="Add a comment..." required />
+                            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+
+
+                    <!-- 💬 Scrollable Comment List Below -->
+                    <div class="comment-list">
+                        <div th:each="c : ${snippet.comments}" class="comment-item">
+
+                            <img th:if="${c.user.profileImage != null}"
+                                 th:src="@{${c.user.profileImage}}"
+                                 alt="Profile"
+                                 class="profile-img rounded-circle avatar" >
+
+                            <!-- Show initial if no image -->
+                            <div th:if="${c.user.profileImage == null}"
+                                 th:text="${#strings.substring(c.user.name, 0, 1)}"
+                                 class="profile-placeholders-moderns rounded-circle">
+                            </div>
+                            <div class="comment-text">
                                 <strong th:text="${c.user.name}">User</strong>
                                 <p th:text="${c.content}">This is a comment</p>
                             </div>
@@ -203,6 +320,20 @@
         </div>
     </div>
 </div>
+
+<!-- 🔗 Share Snippet Modal -->
+<div id="shareModal" class="modal-overlay hidden">
+    <div class="modal-contentss">
+        <button class="close-modal">&times;</button>
+        <h3 id="shareTitle">Share Snippet</h3>
+        <form id="shareForm" th:action="@{/user/snippet/share}" method="post">
+            <input type="hidden" name="snippetId" id="shareSnippetId" />
+            <input type="email" name="email" placeholder="Enter email to share with..." required />
+            <button type="submit" class="share-submit">Share</button>
+        </form>
+    </div>
+</div>
+
 
 <!-- Code Modal -->
 <div id="codeModal" class="modal">
@@ -392,24 +523,25 @@
 
 
 
-   function toggleNotificationPopup() {
-      const popup = document.getElementById('notificationPopup');
-      const badge = document.querySelector('.notification-badge');
-      popup.classList.toggle('show');
-      // Hide badge when notification is opened
-    if (popup.classList.contains('show')) {
-      badge.style.display = 'none';
-    }
-    }
+function toggleNotificationPopup() {
+    const popup = document.getElementById('notificationPopup');
+    const badge = document.querySelector('.notification-badge');
+    popup.classList.toggle('show');
+    // Hide badge when notification is opened
+  if (popup.classList.contains('show')) {
+  fetch('/notification/unread/mark-all-read', { method: 'POST' });
+    badge.style.display = 'none';
+  }
+  }
 
-    // Optional: Click outside to close
-    document.addEventListener('click', function (event) {
-      const popup = document.getElementById('notificationPopup');
-      const bell = document.querySelector('.notification-icon');
-      if (!popup.contains(event.target) && !bell.contains(event.target)) {
-        popup.classList.remove('show');
-      }
-    });
+  // Optional: Click outside to close
+  document.addEventListener('click', function (event) {
+    const popup = document.getElementById('notificationPopup');
+    const bell = document.querySelector('.notification-icon');
+    if (!popup.contains(event.target) && !bell.contains(event.target)) {
+      popup.classList.remove('show');
+    }
+  });
 
     function showTab(tabName) {
   const tabs = document.querySelectorAll('.tab-btn');
@@ -422,6 +554,22 @@
   document.getElementById(`${tabName}-snippets`).classList.add('show');
 }
 
+
+    document.querySelectorAll('.share-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const snippetId = button.getAttribute('data-snippet-id');
+        const title = button.getAttribute('data-title');
+
+        document.getElementById('shareSnippetId').value = snippetId;
+        document.getElementById('shareTitle').textContent = `Share "${title}"`;
+
+        document.getElementById('shareModal').classList.remove('hidden');
+    });
+});
+
+document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('shareModal').classList.add('hidden');
+});
 
 </script>
 </body>

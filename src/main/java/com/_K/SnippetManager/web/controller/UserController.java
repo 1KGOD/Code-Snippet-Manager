@@ -312,6 +312,14 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             System.out.println("Error: " + bindingResult.getAllErrors());
         }
+
+        Optional<User> user1 = userDao.findById(userId);
+
+        if(user1.isEmpty()){
+            return "error/admin404";
+        }
+
+
         if(users.isPresent()){
             User user = users.get();
             userService.editUser(userForm);

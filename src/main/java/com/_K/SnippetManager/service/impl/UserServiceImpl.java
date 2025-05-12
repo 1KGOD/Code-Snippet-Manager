@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedAt(LocalDateTime.now());
         user.setRole(role);
         userDao.save(user);
+        System.out.println(user.getEmail());
     }
 
     @Override

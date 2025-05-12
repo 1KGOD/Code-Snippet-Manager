@@ -16,8 +16,6 @@ import java.util.Optional;
 @Repository
 public interface SnippetDao extends JpaRepository<Snippet , Long> {
 
-    @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false")
-    Page<Snippet>findByIsDeletedFalse(Pageable pageable);
 
     List<Snippet> findByUser_UserIDAndIsDeletedFalseOrderByCreatedAtDesc(Long userId);
 
@@ -36,15 +34,15 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
 
     Optional<Snippet> findBySnippetIdAndUserAndIsDeletedFalse(Long snippetId, User user);
 
-    // Find all snippets where isDeleted is false and isPublished is true
-    List<Snippet> findByIsDeletedFalseAndIsPublishedTrue();
+
 
     Optional<Snippet> findBySnippetIdAndIsDeletedFalse(Long snippetId);
 
 
     @Query("SELECT s FROM Snippet s WHERE s.isDeleted = false AND s.isPublished = true AND " +
             "(LOWER(s.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+            "LOWER(s.code) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(s.user.name) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
             "(:language IS NULL OR s.language.name = :language)")
     Page<Snippet> searchPublishedAndNotDeleted(@Param("search") String search,
                                                @Param("language") String language,
@@ -52,7 +50,6 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
 
     long countByUser_UserIDAndIsDeletedFalseAndIsPublishedTrue(Long userId);
 
-    // Custom query to get the top 3 published snippets with the most ratings
     @Query("SELECT s FROM Snippet s " +
             "JOIN s.ratings r " +
             "WHERE s.isPublished = true " +
@@ -65,6 +62,9 @@ public interface SnippetDao extends JpaRepository<Snippet , Long> {
     List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedTrue(User user);
 
     List<Snippet> findByUserAndUserIsDeletedFalseAndIsDeletedFalseAndIsPublishedFalse(User user);
+
+    List<Snippet> findBySharedWithUsersUserIDAndIsDeletedFalseAndIsPublishedFalse(Long userId);
+
 
     Boolean existsByLanguageAndIsDeletedFalse(Language language);
 

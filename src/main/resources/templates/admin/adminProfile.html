@@ -52,18 +52,7 @@
 
             <form th:action="@{/admin/user/updateProfile}" method="post" th:object="${userForm}" enctype="multipart/form-data" class="profile-form">
                 <div class="profile-avatar text-center mb-4">
-                    <!-- Show image if exists -->
-                    <img th:if="${user.profileImage != null}"
-                         th:src="@{${user.profileImage}}"
-                         alt="Profile"
-                         class="profile-img rounded-circle modern-avatar" />
-
-                    <!-- Show initial if no image -->
-                    <div th:if="${user.profileImage == null}"
-                         th:text="${#strings.substring(user.name, 0, 1)}"
-                         class="profile-placeholder-modern rounded-circle">
-                    </div>
-
+                    <img alt="Profile Image" class="profile-img rounded-circle mb-3" th:src="${user.profileImage != null} ? @{${user.profileImage}} : @{/img/default-profile.jpg}">
                     <div>
                         <label for="profileImage" class="profile-label">Change Profile Image</label>
                         <input type="file" id="profileImage" name="profileImage" th:field="*{profileImage}">

@@ -12,6 +12,7 @@ import com._K.SnippetManager.web.form.SnippetForm;
 import com._K.SnippetManager.web.form.UserForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -121,9 +122,12 @@ public class SnippetController {
         List<Language> lang = languageDao.findAll();
         Optional<Snippet> snippet = snippetDao.findById(snippetId);
 
+        if(snippet.isEmpty()){
+            return "error/user404";
+        }
+
         if(snippet.isPresent()){
             SnippetForm snippetForm = new SnippetForm(snippet.get());
-            System.out.println("Snippet ID: " + snippetForm.getSnippetId());
             model.addAttribute("snippetForm", snippetForm);
             model.addAttribute("lang",lang);
             model.addAttribute("user",user.orElse(null));
@@ -186,5 +190,19 @@ public class SnippetController {
         }
 
         return "redirect:/user/dashboard";
+    }
+
+
+    @RequestMapping(value = "/user/snippet/share" , method = RequestMethod.POST)
+    public String snippetShare(@RequestParam("snippetId")Long snippetId , @RequestParam("email") String email , Model model ){
+
+
+        Optional<User> userOpt = userDao.findByEmailAndIsDeletedFalse(email);
+        if(userOpt.isPresent()){
+            User user  = userOpt.get();
+           Long userId = user.getUserID();
+            snippetService.shareSnippetWithUser(snippetId,userId);
+        }
+        return "redirect:/myLibrary";
     }
 }
